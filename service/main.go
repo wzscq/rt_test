@@ -1,0 +1,60 @@
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
+	"rt_test_service/common"
+	"rt_test_service/robot"
+	"rt_test_service/crv"
+	"log"
+	"time"
+)
+
+func main() {
+	//设置log打印文件名和行号
+    log.SetFlags(log.Lshortfile | log.LstdFlags)
+
+	//初始化配置文件
+	conf:=common.InitConfig()
+
+	//初始化时区
+    var cstZone = time.FixedZone("CST", conf.Service.CSTZone*3600)
+	time.Local = cstZone
+
+	//启动到机器人平台的mqtt连接
+	/*robotMqttClient:=robot.RobotMQTTClient{
+		Broker:conf.RobotMQTTClient.Broker,
+		User:conf.RobotMQTTClient.User,
+		Password:conf.RobotMQTTClient.Password,
+	}
+	robotMqttClient.Init()*/
+	
+	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+        AllowAllOrigins:true,
+        AllowHeaders:     []string{"*"},
+        ExposeHeaders:    []string{"*"},
+        AllowCredentials: true,
+    }))
+
+	//初始化机器人平台客户端
+	RobotClient:=robot.RobotClient{
+		Conf:&conf.RobotClient,
+	}
+
+	//crvClient 用于到crvframeserver的请求
+	crvClient:=&crv.CRVClient{
+		Server:conf.CRV.Server,
+		Token:conf.CRV.Token,
+		AppID:conf.CRV.AppID,
+	}
+
+	rtc:=robot.RobotController{
+		RobotClient:&RobotClient,
+		CRVClient:crvClient,
+	}
+
+	rtc.Bind(router)
+
+	router.Run(conf.Service.Port)
+}
