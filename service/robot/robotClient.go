@@ -24,16 +24,10 @@ type RobotStatus struct {
 	PixelTheta string `json:"pixelTheta"`
 	Exception string `json:"exception"`
 	DatetimeSend string `json:"dateTimeSend"`
-	StatusCode string `json:"statusCode"`
+	StateCode string `json:"stateCode"`
 }
 
 type RobotInfo struct {
-	Id string `json:"id"`
-	CreateBy string `json:"createBy"`
-	CreateTime string `json:"createTime"`
-	UpdateBy string `json:"updateBy"`
-	UpdateTime string `json:"updateTime"`
-	SysOrgCode string `json:"sysOrgCode"`
 	RobotId string `json:"robotId"`
 	RobotName string `json:"robotName"`
 	LongitudeLatitude string `json:"longitudeLatitude"`

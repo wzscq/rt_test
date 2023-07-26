@@ -21,7 +21,8 @@ const (
 	ResultMqttClientError = 10200004
 	ResultSaveDataError = 10200005
 	ResultQueryRequestError = 10200006
-
+	ResultQueryRobotError = 10200007
+	ResultNoCommitedTestCaseError = 10200008
 )
 
 var errMsg = map[int]CommonRsp{
@@ -58,6 +59,16 @@ var errMsg = map[int]CommonRsp{
 	ResultQueryRequestError:CommonRsp{
 		ErrorCode:ResultQueryRequestError,
 		Message:"下发参数时发送查询参数请求失败，请与管理员联系处理",
+		Error:true,
+	},
+	ResultQueryRobotError:CommonRsp{
+		ErrorCode:ResultQueryRobotError,
+		Message:"未能查询到对应机器人信息，请与管理员联系处理",
+		Error:true,
+	},
+	ResultNoCommitedTestCaseError:CommonRsp{
+		ErrorCode:ResultNoCommitedTestCaseError,
+		Message:"未能查询到可发布的测试用例，请与管理员联系处理",
 		Error:true,
 	},
 }

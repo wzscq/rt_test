@@ -20,7 +20,7 @@
             "appSecret":"78Fb79b86e69bcc1a22&6693bff2f8090"
         },
         "getRobotList":{
-            "url":"http://47.101.221.57:8840/hazhi-boot/robot/robotInfo/getRobotList"
+            "url":"http://47.101.221.57:8840/hazhi-boot/robot/robotInfo/getRobotListInfo"
         },
         "getCurrentRobotStatus":{
             "url":"http://47.101.221.57:8840/hazhi-boot/robot/robotStatus/getCurrentRobotStatus"
@@ -28,5 +28,20 @@
         "getTestEquipmentStatus":{
             "url":"http://47.101.221.57:8840/hazhi-boot/robot/robotInfo/getTestEquipmentStatus"
         }
+    },
+    "mqtt":{
+        "broker":"121.37.185.248",
+        "port":1983,
+        "wsPort":9101,
+        "user":"mosquitto",
+        "password":"123456",
+        "uploadMeasurementMetrics":"measurementMetrics/upload"
+    },
+    "ftp":{
+        "host":"",
+        "port":21,
+        "user":"",
+        "password":"",
+        "folder": "/"
     }
 }

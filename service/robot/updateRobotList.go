@@ -4,6 +4,7 @@ import (
 	"log"
 	"rt_test_service/common"
 	"rt_test_service/crv"
+	"strings"
 )
 
 type ProjectRobot struct {
@@ -13,17 +14,19 @@ type ProjectRobot struct {
 	ProjectID string `json:"rt_project_id"`
 }	
 
-var MOdElID_ROBOT="rt_project_robot"
+var MODELID_ROBOT="rt_project_robot"
+var MODELID_ROBOT_EVENT="rt_robot_event"
 
 var	queryRobotFields=[]map[string]interface{}{
 	{"field": "id"},
 	{"field": "version"},
 }
 
-func GetRobotList(crvClient *crv.CRVClient,token string)([]ProjectRobot){
+func GetRobotList(crvClient *crv.CRVClient,token string,filter map[string]interface{})([]ProjectRobot){
 	commonRep:=crv.CommonReq{
-		ModelID:MOdElID_ROBOT,
+		ModelID:MODELID_ROBOT,
 		Fields:&queryRobotFields,
+		Filter:&filter,
 	}
 
 	rsp,commonErr:=crvClient.Query(&commonRep,token)
@@ -36,7 +39,7 @@ func GetRobotList(crvClient *crv.CRVClient,token string)([]ProjectRobot){
 		return nil
 	}
 
-	resLst,ok:=rsp.Result["list"].([]interface{})
+	resLst,ok:=rsp.Result.(map[string]interface{})["list"].([]interface{})
 	if !ok {
 		log.Println("GetRobotList error: no list in rsp.")
 		return nil
@@ -62,9 +65,9 @@ func GetRobotList(crvClient *crv.CRVClient,token string)([]ProjectRobot){
 	return robots
 }
 
-func UpdateRobotList(crvClient *crv.CRVClient,robotList []RobotInfo,token string)(int){
+func UpdateRobotList(crvClient *crv.CRVClient,robotList []RobotInfo,token string)(*common.CommonRsp){
 	//获取已经存在的机器人列表
-	currentRobotList:=GetRobotList(crvClient,token)
+	currentRobotList:=GetRobotList(crvClient,token,nil)
 
 	saveRobotList:=[]map[string]interface{}{}
 	//比较机器人列表，找出需要新增的机器人和需要删除的机器人
@@ -79,11 +82,26 @@ func UpdateRobotList(crvClient *crv.CRVClient,robotList []RobotInfo,token string
 				break
 			}
 		}
+
 		if robotInfo != nil {
+			//将用逗号分割的经纬度字符串拆分成数组
+			llarr:=strings.Split(robotInfo.LongitudeLatitude,",")
+
+			isOnline:="0"
+			if robotInfo.IsOnlineStatus==true {
+				isOnline="1"
+			}
+
 			saveRobot:=map[string]interface{}{
 				"id":currentRobot.ID,
 				"version":currentRobot.Version,
 				"name":robotInfo.RobotName,
+				"longitude":llarr[0],
+				"latitude":llarr[1],
+				"position":robotInfo.Position,
+				"electricity":robotInfo.Electricity,
+				"online":robotInfo.Online,
+				"is_online":isOnline,
 				"_save_type":"update",
 			}
 			saveRobotList=append(saveRobotList,saveRobot)
@@ -108,10 +126,24 @@ func UpdateRobotList(crvClient *crv.CRVClient,robotList []RobotInfo,token string
 			}
 		}
 		if currentRobot == nil {
+			//将用逗号分割的经纬度字符串拆分成数组
+			llarr:=strings.Split(robot.LongitudeLatitude,",")
+
+			isOnline:="0"
+			if robot.IsOnlineStatus==true {
+				isOnline="1"
+			}
+
 			//需要新增
 			saveRobot:=map[string]interface{}{
 				"id":robot.RobotId,
 				"name":robot.RobotName,
+				"longitude":llarr[0],
+				"latitude":llarr[1],
+				"position":robot.Position,
+				"electricity":robot.Electricity,
+				"online":robot.Online,
+				"is_online":isOnline,
 				"_save_type":"create",
 			}
 			saveRobotList=append(saveRobotList,saveRobot)
@@ -120,20 +152,64 @@ func UpdateRobotList(crvClient *crv.CRVClient,robotList []RobotInfo,token string
 
 	//保存机器人列表
 	commonRep:=crv.CommonReq{
-		ModelID:MOdElID_ROBOT,
+		ModelID:MODELID_ROBOT,
 		List:&saveRobotList,
 	}
 
 	rsp,commonErr:=crvClient.Save(&commonRep,token)
 	if commonErr!=common.ResultSuccess {
-		return commonErr
+		rsp:=common.CreateResponse(common.CreateError(commonErr,nil),nil)
+		return rsp
 	}
 
 	if rsp.Error == true {
 		log.Println("UpdateRobotList error:",rsp.ErrorCode,rsp.Message)
-		return rsp.ErrorCode
+		return rsp
 	}
 
-	return common.ResultSuccess
+	//保存机器人事件记录
+	saveRobotEventList:=[]map[string]interface{}{}
+	for _,robot:=range robotList {
+		//将用逗号分割的经纬度字符串拆分成数组
+		llarr:=strings.Split(robot.LongitudeLatitude,",")
+
+		isOnline:="0"
+		if robot.IsOnlineStatus==true {
+			isOnline="1"
+		}
+
+		//需要新增
+		saveRobot:=map[string]interface{}{
+			"robot_id":robot.RobotId,
+			"robot_name":robot.RobotName,
+			"longitude":llarr[0],
+			"latitude":llarr[1],
+			"position":robot.Position,
+			"electricity":robot.Electricity,
+			"online":robot.Online,
+			"is_online":isOnline,
+			"_save_type":"create",
+		}
+		saveRobotEventList=append(saveRobotEventList,saveRobot)
+	}
+
+	//保存机器人列表
+	commonRep=crv.CommonReq{
+		ModelID:MODELID_ROBOT_EVENT,
+		List:&saveRobotEventList,
+	}
+
+	rsp,commonErr=crvClient.Save(&commonRep,token)
+	if commonErr!=common.ResultSuccess {
+		rsp:=common.CreateResponse(common.CreateError(commonErr,nil),nil)
+		return rsp
+	}
+
+	if rsp.Error == true {
+		log.Println("UpdateRobotList error:",rsp.ErrorCode,rsp.Message)
+		return rsp
+	}
+
+	return nil
 }
 

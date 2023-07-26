@@ -40,11 +40,30 @@ type crvConf struct {
 	Token string `json:"token"`
 }
 
+type MqttConf struct {
+	Broker string `json:"broker"`
+	Port int `json:"port"`
+	WSPort int `json:"wsPort"`
+	Password string `json:"password"`
+	User string `json:"user"`
+	UploadMeasurementMetrics string `json:"uploadMeasurementMetrics"`
+}
+
+type FtpConf struct {
+	Host string `json:"host"`
+	Port int `json:"port"`
+	User string `json:"user"`
+	Password string `json:"password"`
+	Folder string `json:"folder"`
+}
+
 type Config struct {
 	Service serviceConf `json:"service"`
 	RobotMQTTClient RobotMQTTClientConf `json:"robotMQTTClient"`
 	RobotClient RobotClientConf `json:"robotClient"`
 	CRV crvConf `json:"crv"`
+	Mqtt MqttConf `json:"mqtt"`
+	Ftp FtpConf `json:"ftp"`
 }
 
 var gConfig Config

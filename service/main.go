@@ -6,6 +6,7 @@ import (
 	"rt_test_service/common"
 	"rt_test_service/robot"
 	"rt_test_service/crv"
+	"rt_test_service/device"
 	"log"
 	"time"
 )
@@ -38,9 +39,20 @@ func main() {
     }))
 
 	//初始化机器人平台客户端
-	RobotClient:=robot.RobotClient{
+	robotClient:=&robot.RobotClient{
 		Conf:&conf.RobotClient,
 	}
+
+	/*rsp,err:=robotClient.Oauth()
+	if err==nil && rsp.Result!=nil {
+		log.Println("RobotClient Oauth success with token:",rsp.Result.Token)
+		rsp1,err:=robotClient.GetCurrentRobotStatus(rsp.Result.Token,"2bee174b7d7c36e9b98bd8772e66af5e")
+		if err==nil && rsp1.Result!=nil {
+			log.Println("RobotClient GetRobotList success with result:",rsp1)
+		}
+	}
+
+	return;*/
 
 	//crvClient 用于到crvframeserver的请求
 	crvClient:=&crv.CRVClient{
@@ -50,11 +62,17 @@ func main() {
 	}
 
 	rtc:=robot.RobotController{
-		RobotClient:&RobotClient,
+		RobotClient:robotClient,
 		CRVClient:crvClient,
 	}
-
 	rtc.Bind(router)
 
+	dc:=device.DeviceController{
+		CRVClient:crvClient,
+		MqttConf:&conf.Mqtt,
+		FtpConf:&conf.Ftp,
+	}
+	dc.Bind(router)
+	
 	router.Run(conf.Service.Port)
 }

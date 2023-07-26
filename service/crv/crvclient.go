@@ -35,13 +35,6 @@ type CommonHeader struct {
 	UserRoles string  `json:"userRoles"`
 }
 
-type CommonRsp struct {
-	ErrorCode int `json:"errorCode"`
-	Message string `json:"message"`
-	Error bool `json:"error"`
-	Result map[string]interface{} `json:"result"`
-}
-
 type Pagination struct {
     Current int `json:"current"` 
     PageSize int `json:"pageSize"` 
@@ -136,7 +129,7 @@ func (crv *CRVClient) Login()(int) {
 	return 0
 }
 
-func (crv *CRVClient)Save(commonReq *CommonReq,token string)(*CommonRsp,int){
+func (crv *CRVClient)Save(commonReq *CommonReq,token string)(*common.CommonRsp,int){
 	log.Println("start CRVClient save ...")
 	postJson,_:=json.Marshal(*commonReq)
 	postBody:=bytes.NewBuffer(postJson)
@@ -167,7 +160,7 @@ func (crv *CRVClient)Save(commonReq *CommonReq,token string)(*CommonRsp,int){
 	}
 
 	decoder := json.NewDecoder(resp.Body)
-	commonRsp:=CommonRsp{}
+	commonRsp:=common.CommonRsp{}
 	err = decoder.Decode(&commonRsp)
 	if err != nil {
 		log.Println("CRVClient save result decode failed [Err:%s]", err.Error())
@@ -185,7 +178,7 @@ func (crv *CRVClient)Save(commonReq *CommonReq,token string)(*CommonRsp,int){
 	return &commonRsp,common.ResultSuccess
 }
 
-func (crv *CRVClient)Query(commonReq *CommonReq,token string)(*CommonRsp,int){
+func (crv *CRVClient)Query(commonReq *CommonReq,token string)(*common.CommonRsp,int){
 	log.Println("start CRVClient query ...")
 	postJson,_:=json.Marshal(*commonReq)
 	postBody:=bytes.NewBuffer(postJson)
@@ -216,7 +209,7 @@ func (crv *CRVClient)Query(commonReq *CommonReq,token string)(*CommonRsp,int){
 	}
 
 	decoder := json.NewDecoder(resp.Body)
-	commonRsp:=CommonRsp{}
+	commonRsp:=common.CommonRsp{}
 	err = decoder.Decode(&commonRsp)
 	if err != nil {
 		log.Println("CRVClient query result decode failed [Err:%s]", err.Error())
