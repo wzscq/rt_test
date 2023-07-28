@@ -46,6 +46,14 @@ type getTestEquipmentStatusRsp struct {
 	Timestamp int64 `json:"timestamp"`
 }
 
+type sendTaskRsp struct {
+	Success bool `json:"success"`
+	Message string `json:"message"`
+	Code int `json:"code"`
+	Result interface{} `json:"result"`
+	Timestamp int64 `json:"timestamp"`
+}
+
 type getCurrentRobotStatusRsp struct {
 	Success bool `json:"success"`
 	Message string `json:"message"`
@@ -221,6 +229,43 @@ func (rc *RobotClient) GetTestEquipmentStatus(token,robotID string)(*getTestEqui
 	}
 
 	log.Println("RobotClient GetTestEquipmentStatus success with result:",rsp)
+	return &rsp,nil
+}
+
+func (rc *RobotClient)SendTask(token string,task map[string]interface{})(*sendTaskRsp,error){
+	url:=rc.Conf.SendTask.URL
+
+	postJson,_:=json.Marshal(task)
+
+	log.Println("RobotClient SendTask with json:",string(postJson))
+
+	postBody:=bytes.NewBuffer(postJson)
+
+	req,err:=http.NewRequest("POST",url,postBody)
+	if err != nil {
+		log.Println("RobotClient SendTask NewRequest error",err)
+		return nil,err
+	}
+
+	req.Header.Set("Content-Type","application/json")
+	req.Header.Set("X-Access-Token",token)
+
+	resp, err := (&http.Client{}).Do(req)
+	if err != nil {
+		log.Println("RobotClient SendTask Do request error",err)
+		return nil,err
+	}
+	defer resp.Body.Close()
+
+	decoder := json.NewDecoder(resp.Body)
+	rsp:=sendTaskRsp{}
+	err = decoder.Decode(&rsp)
+	if err != nil {
+		log.Println("RobotClient SendTask rsp decode failed [Err:%s]", err.Error())
+		return nil,err
+	}
+
+	log.Println("RobotClient SendTask success with result:",rsp)
 	return &rsp,nil
 }
 

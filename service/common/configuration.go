@@ -21,6 +21,7 @@ type RobotClientConf struct {
 	GetRobotList RobotAPI `json:"getRobotList"`
 	GetCurrentRobotStatus RobotAPI `json:"getCurrentRobotStatus"`
 	GetTestEquipmentStatus RobotAPI `json:"getTestEquipmentStatus"`
+	SendTask RobotAPI `json:"sendTask"`
 }
 
 type serviceConf struct {
@@ -36,7 +37,7 @@ type RobotMQTTClientConf struct {
 
 type crvConf struct {
 	Server string `json:"server"`
-    AppID string `json:"appID"`
+  AppID string `json:"appID"`
 	Token string `json:"token"`
 }
 

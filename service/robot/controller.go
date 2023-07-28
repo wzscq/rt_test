@@ -211,10 +211,84 @@ func (rtc *RobotController)mapUpload(c *gin.Context){
 	log.Println("RobotController getRobotList success")
 }
 
+func (rtc *RobotController)sendTask(c *gin.Context){
+	var header crv.CommonHeader
+	if err := c.ShouldBindHeader(&header); err != nil {
+		log.Println(err)
+		rsp:=common.CreateResponse(common.CreateError(common.ResultWrongRequest,nil),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		log.Println("RobotController sendTask wrong request")
+		return
+	}	
+
+	var rep crv.CommonReq
+	if err := c.BindJSON(&rep); err != nil {
+		log.Println(err)
+		rsp:=common.CreateResponse(common.CreateError(common.ResultWrongRequest,nil),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		log.Println("RobotController sendTask with error")
+		return
+  }	
+
+	if rep.SelectedRowKeys ==nil || len(*rep.SelectedRowKeys)==0 {
+		rsp:=common.CreateResponse(common.CreateError(common.ResultWrongRequest,nil),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		log.Println("RobotController sendTask：request SelectedRowKeys is empty")
+		return
+	}
+
+	//获取下发内容
+	taskID:=(*rep.SelectedRowKeys)[0]
+	sendTask,errorCode:=GetTask(rtc.CRVClient,taskID,header.Token)
+	if errorCode != common.ResultSuccess {
+		rsp:=common.CreateResponse(common.CreateError(errorCode,nil),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		return
+	}
+	
+	//获取token
+	oauthRsp, err:=rtc.RobotClient.Oauth()
+	if err!=nil {
+		log.Println("RobotController sendTask：request Oauth error",err)
+		params:=map[string]interface{}{
+			"error":err,
+		}
+		rsp:=common.CreateResponse(common.CreateError(common.ResultGetRobotPlatformTokenError,params),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		return	
+	}
+
+	//下发任务配置
+	sendTaskRsp, err:=rtc.RobotClient.SendTask(oauthRsp.Result.Token,sendTask)
+	if err!=nil {
+		log.Println("RobotController sendTask：request SendTask error",err)
+		params:=map[string]interface{}{
+			"error":err,
+		}
+		rsp:=common.CreateResponse(common.CreateError(common.ResultGetRobotPlatformAPIError,params),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		return	
+	}
+
+	if sendTaskRsp.Success == false {
+		log.Println("RobotController sendTask：request SendTask error",sendTaskRsp)
+		params:=map[string]interface{}{
+			"message":sendTaskRsp.Message,
+		}
+		rsp:=common.CreateResponse(common.CreateError(common.ResultGetRobotPlatformAPIError,params),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		return	
+	}
+
+	rsp:=common.CreateResponse(common.CreateError(common.ResultSuccess,nil),nil)
+	c.IndentedJSON(http.StatusOK, rsp)
+}
+
 //Bind bind the controller function to url
 func (rtc *RobotController) Bind(router *gin.Engine) {
 	log.Println("Bind RobotController")
-	router.POST("/getRobotList", rtc.getRobotList)
-	router.POST("/getCurrentRobotStatus", rtc.getCurrentRobotStatus)
-	router.POST("/mapUpload", rtc.mapUpload)
+	router.POST("/robot/getRobotList", rtc.getRobotList)
+	router.POST("/robot/getCurrentRobotStatus", rtc.getCurrentRobotStatus)
+	router.POST("/robot/mapUpload", rtc.mapUpload)
+	router.POST("/robot/sendTask", rtc.sendTask)
 }

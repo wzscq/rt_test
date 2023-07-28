@@ -23,6 +23,10 @@ const (
 	ResultQueryRequestError = 10200006
 	ResultQueryRobotError = 10200007
 	ResultNoCommitedTestCaseError = 10200008
+	ResultNoTask = 10200009
+	ResultNoTaskUe = 10200010
+	ResultNoTaskUeTc = 10200011
+
 )
 
 var errMsg = map[int]CommonRsp{
@@ -69,6 +73,21 @@ var errMsg = map[int]CommonRsp{
 	ResultNoCommitedTestCaseError:CommonRsp{
 		ErrorCode:ResultNoCommitedTestCaseError,
 		Message:"未能查询到可发布的测试用例，请与管理员联系处理",
+		Error:true,
+	},
+	ResultNoTask:CommonRsp{
+		ErrorCode:ResultNoTask,
+		Message:"未能查询到对应的测试任务信息，请与管理员联系处理",
+		Error:true,
+	},
+	ResultNoTaskUe:CommonRsp{
+		ErrorCode:ResultNoTaskUe,
+		Message:"未获取到测试任务中的UE信息，请检查UE配置是否完整",
+		Error:true,
+	},
+	ResultNoTaskUeTc:CommonRsp{
+		ErrorCode:ResultNoTaskUeTc,
+		Message:"未获取到测试任务中的UE测试用例信息，请检查测试用例配置是否完整",
 		Error:true,
 	},
 }

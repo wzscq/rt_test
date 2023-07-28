@@ -27,6 +27,9 @@
         },
         "getTestEquipmentStatus":{
             "url":"http://47.101.221.57:8840/hazhi-boot/robot/robotInfo/getTestEquipmentStatus"
+        },
+        "sendTask":{
+            "url":"http://47.101.221.57:8840/hazhi-boot/robot/robotInfo/receiveTasks"
         }
     },
     "mqtt":{

@@ -71,6 +71,6 @@ func (dc *DeviceController)getTestCase(c *gin.Context){
 
 func (dc *DeviceController) Bind(router *gin.Engine) {
 	log.Println("Bind DeviceController")
-	router.POST("/getServerConf", dc.getServerConf)
-	router.POST("/getTestCase", dc.getTestCase)
+	router.POST("/device/getServerConf", dc.getServerConf)
+	router.POST("/device/getTestCase", dc.getTestCase)
 }
