@@ -7,7 +7,10 @@ import (
 	"rt_test_service/crv"
 	"net/http"
 	"encoding/base64"
-  "io/ioutil"
+	"github.com/jbuchbinder/gopnm"
+
+	"image/png"
+	"bytes"
 )
 
 type RobotController struct {
@@ -194,10 +197,29 @@ func (rtc *RobotController)mapUpload(c *gin.Context){
 
 	f, _ := file.Open()
 
-	// 读取文件的内容到一个字节切片中
-	content, _ := ioutil.ReadAll(f)
+	// 解码PGM文件
+	//img, format, err := image.Decode(f)
+	//log.Println("RobotController mapUpload format",format)
+	img, err := pnm.Decode(f)
+	if err != nil {
+			log.Println("RobotController mapUpload pnm.Decode error",err)
+			rsp:=common.CreateResponse(common.CreateError(common.ResultConvertPGM2PNGError,nil),nil)
+			c.IndentedJSON(http.StatusOK, rsp)
+			return
+	}
+
+	content := new(bytes.Buffer)
+  // Encode the new image to the buffer in png format.
+  encodeErr := png.Encode(content, img)
+	if encodeErr != nil {
+		log.Println("RobotController mapUpload png.Encode error",encodeErr)
+		rsp:=common.CreateResponse(common.CreateError(common.ResultConvertPGM2PNGError,nil),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		return
+	}
+
 	// 将字节切片转换为Base64编码
-	encoded := base64.StdEncoding.EncodeToString(content)
+	encoded := base64.StdEncoding.EncodeToString(content.Bytes())
 
 	//上传服务器
 	rsp:=SaveRobotMap(rtc.CRVClient,&rep,encoded,header.Token)

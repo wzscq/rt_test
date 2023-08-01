@@ -20,7 +20,7 @@ func SaveRobotMap(crvClient *crv.CRVClient,rep *UploadMapReq,fileBase64 string,t
 			"list":[]map[string]interface{}{
 				map[string]interface{}{
 					"contentBase64":fileBase64,
-					"name":rep.PictureName,
+					"name":rep.PictureName+".png",
 					"_save_type":"create",
 				},
 			},

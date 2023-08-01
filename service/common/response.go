@@ -26,7 +26,7 @@ const (
 	ResultNoTask = 10200009
 	ResultNoTaskUe = 10200010
 	ResultNoTaskUeTc = 10200011
-
+	ResultConvertPGM2PNGError = 10200012
 )
 
 var errMsg = map[int]CommonRsp{
@@ -88,6 +88,11 @@ var errMsg = map[int]CommonRsp{
 	ResultNoTaskUeTc:CommonRsp{
 		ErrorCode:ResultNoTaskUeTc,
 		Message:"未获取到测试任务中的UE测试用例信息，请检查测试用例配置是否完整",
+		Error:true,
+	},
+	ResultConvertPGM2PNGError:CommonRsp{
+		ErrorCode:ResultConvertPGM2PNGError,
+		Message:"PGM格式图片转换为PNG格式图片失败，请检查图片格式是否正确",
 		Error:true,
 	},
 }
