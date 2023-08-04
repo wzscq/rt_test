@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-import mqttReducer from './frameSlice';
+import mqttReducer from './mqttSlice';
+import dataReducer from './dataSlice';
 
 export default configureStore({
   reducer: {
-    mqtt:mqttReducer
+    mqtt:mqttReducer,
+    data:dataReducer
   }
 });

@@ -5,7 +5,7 @@ import { getMqttServer } from '../api';
 const initialState = {
     mqttConfLoaded:false,
     mqttConf:{
-        broker:"121.36.192.249",
+        broker:"121.37.185.248",
         wsPort:9101,
         user:"mosquitto",
         password:"123456"
