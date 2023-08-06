@@ -8,7 +8,8 @@ const initialState = {
         broker:"121.37.185.248",
         wsPort:9101,
         user:"mosquitto",
-        password:"123456"
+        password:"123456",
+        uploadMeasurementMetrics:"realtime_measurement_reporting/"
     }
 }
 

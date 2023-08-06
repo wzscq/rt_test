@@ -107,7 +107,15 @@ func ConvertToSendTask(task map[string]interface{})(map[string]interface{},int){
 		return nil,common.ResultNoTaskUe
 	}
 
-	details:=[]map[string]interface{}{}
+	details:=[]map[string]interface{}{
+		map[string]interface{}{
+		"tc_exe_id":task["id"],
+		"tc_exe_name":task["name"],
+		},
+	}
+
+	relation:=[]map[string]interface{}{}
+
 	for _,ue:=range ueList {
 		ueMap,_:=ue.(map[string]interface{})
 		ueImei,_:=ueMap["imei_id"].(map[string]interface{})
@@ -141,8 +149,9 @@ func ConvertToSendTask(task map[string]interface{})(map[string]interface{},int){
 			tcids=append(tcids,tcMap["tc_id"].(string))
 		}
 		ueDetail["tc_ids"]=tcids
-		details=append(details,ueDetail)
+		relation=append(relation,ueDetail)
 	}
+	details[0]["relation"]=relation
 	sendTask["detail"]=details
 	robotID:=task["robot_id"].(string)
 	sendTask["robotId"]=robotID

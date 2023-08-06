@@ -1,6 +1,6 @@
 import {useSelector,useDispatch} from 'react-redux';
 import mqtt from 'mqtt';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {addDataItem} from '../../../redux/dataSlice';
 
@@ -11,8 +11,10 @@ var g_MQTTClient=null;
 export default function Header(){
   const dispatch=useDispatch();
   const {mqttConf}=useSelector(state=>state.mqtt);
+  const device=useSelector(state=>state.data.device.list?state.data.device.list[0]:undefined);
+  const [mqttStatus,setMqttStatus]=useState('disconnected');
 
-  const connectMqtt=()=>{
+  const connectMqtt=(deviceID)=>{
     console.log("connectMqtt ... ");
     if(g_MQTTClient!==null){
         g_MQTTClient.end();
@@ -27,16 +29,14 @@ export default function Header(){
     console.log("connect to mqtt server ... "+server+" with options:",options);
     g_MQTTClient  = mqtt.connect(server,options);
     g_MQTTClient.on('connect', () => {
-        console.log("connected to mqtt server "+server+".");
-        console.log("subscribe topics ...");
-        g_MQTTClient.subscribe("realtime_measurement_reporting/178BFBFF00800F82", (err) => {
+        setMqttStatus("connected to mqtt server "+server+".");
+        const topic=mqttConf.uploadMeasurementMetrics+deviceID;
+        g_MQTTClient.subscribe(topic, (err) => {
             if(!err){
-                console.log("subscribe topics success.");
-                console.log("topic:","realtime_measurement_reporting/178BFBFF00800F82");
-                //发送流执行请求
-             
+                setMqttStatus("subscribe topics success.");
+                console.log("topic:",topic);
             } else {
-                console.log("subscribe topics error :"+err.toString());
+                setMqttStatus("subscribe topics error :"+err.toString());
             }
         });
     });
@@ -45,15 +45,20 @@ export default function Header(){
         dispatch(addDataItem(JSON.parse(payload.toString())));
     });
     g_MQTTClient.on('close', () => {
-        console.log("mqtt client is closed.");
+      setMqttStatus("mqtt client is closed.");
     });
   }
 
   useEffect(()=>{
-    connectMqtt();
-  });
+    if(device?.host_id){
+      connectMqtt(device.host_id);
+    }
+  },[device]);
 
   return (
-    <div className='monitor-header'>Monitor</div>
+    <div className='monitor-header'>
+      {'Device: '+device?.id+" Host: "+device?.host_id}
+      {' MQTT: '+mqttStatus}
+    </div>
   )
 }
