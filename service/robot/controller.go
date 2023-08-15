@@ -164,7 +164,91 @@ func (rtc *RobotController)getCurrentRobotStatus(c *gin.Context){
 
 	rsp:=common.CreateResponse(common.CreateError(common.ResultSuccess,nil),nil)
 	c.IndentedJSON(http.StatusOK, rsp)
-	log.Println("RobotController getRobotList success")
+	log.Println("RobotController getCurrentRobotStatus success")
+}
+
+func (rtc *RobotController)getTestEquipmentStatus(c *gin.Context){
+	var header crv.CommonHeader
+	if err := c.ShouldBindHeader(&header); err != nil {
+		log.Println(err)
+		rsp:=common.CreateResponse(common.CreateError(common.ResultWrongRequest,nil),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		log.Println("RobotController getTestEquipmentStatus wrong request")
+		return
+	}	
+
+	var rep crv.CommonReq
+	if err := c.BindJSON(&rep); err != nil {
+		log.Println(err)
+		rsp:=common.CreateResponse(common.CreateError(common.ResultWrongRequest,nil),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		log.Println("RobotController getTestEquipmentStatus with error")
+		return
+  }	
+
+	if rep.SelectedRowKeys ==nil || len(*rep.SelectedRowKeys)==0 {
+		rsp:=common.CreateResponse(common.CreateError(common.ResultWrongRequest,nil),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		log.Println("RobotController getTestEquipmentStatus：request SelectedRowKeys is empty")
+		return
+	}
+
+	//获取token
+	oauthRsp, err:=rtc.RobotClient.Oauth()
+	if err!=nil {
+		log.Println("RobotController getTestEquipmentStatus：request Oauth error",err)
+		params:=map[string]interface{}{
+			"error":err,
+		}
+		rsp:=common.CreateResponse(common.CreateError(common.ResultGetRobotPlatformTokenError,params),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		return	
+	}
+
+	if oauthRsp.Result==nil {
+		log.Println("RobotController getTestEquipmentStatus：request Oauth error",oauthRsp)
+		params:=map[string]interface{}{
+			"message":oauthRsp.Message,
+		}
+		rsp:=common.CreateResponse(common.CreateError(common.ResultGetRobotPlatformTokenError,params),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		return	
+	}
+
+	//循环获取机器人状态
+	for _,robotID:=range *rep.SelectedRowKeys {
+		//获取测试设备信息
+		getTestEquipmentStatusRsp, err:=rtc.RobotClient.GetTestEquipmentStatus(oauthRsp.Result.Token,robotID)
+		if err!=nil {
+			log.Println("RobotController getTestEquipmentStatus：request GetTestEquipmentStatus error",err)
+			params:=map[string]interface{}{
+				"error":err,
+			}
+			rsp:=common.CreateResponse(common.CreateError(common.ResultGetRobotPlatformAPIError,params),nil)
+			c.IndentedJSON(http.StatusOK, rsp)
+			return	
+		}
+
+		if getTestEquipmentStatusRsp.Result==nil {
+			log.Println("RobotController getTestEquipmentStatus：request GetTestEquipmentStatus error",getTestEquipmentStatusRsp)
+			params:=map[string]interface{}{
+				"message":getTestEquipmentStatusRsp.Message,
+			}
+			rsp:=common.CreateResponse(common.CreateError(common.ResultGetRobotPlatformAPIError,params),nil)
+			c.IndentedJSON(http.StatusOK, rsp)
+			return	
+		}
+
+		rsp:=UpdateRobotEquipment(rtc.CRVClient,getTestEquipmentStatusRsp.Result,header.Token)
+		if rsp!=nil {
+			c.IndentedJSON(http.StatusOK, rsp)
+			return
+		}
+	}
+
+	rsp:=common.CreateResponse(common.CreateError(common.ResultSuccess,nil),nil)
+	c.IndentedJSON(http.StatusOK, rsp)
+	log.Println("RobotController getTestEquipmentStatus success")
 }
 
 func (rtc *RobotController)mapUpload(c *gin.Context){
@@ -311,6 +395,7 @@ func (rtc *RobotController) Bind(router *gin.Engine) {
 	log.Println("Bind RobotController")
 	router.POST("/robot/getRobotList", rtc.getRobotList)
 	router.POST("/robot/getCurrentRobotStatus", rtc.getCurrentRobotStatus)
+	router.POST("/robot/getTestEquipmentStatus", rtc.getTestEquipmentStatus)
 	router.POST("/robot/mapUpload", rtc.mapUpload)
 	router.POST("/robot/sendTask", rtc.sendTask)
 }

@@ -38,11 +38,39 @@ type RobotInfo struct {
 	IsOnlineStatus bool `json:"isOnlineStatus"`
 }
 
+type SlotInfo struct {
+	Country string `json:"country"`
+	SlotID string `json:"slot_id"`
+	IMEI string `json:"imei"`
+	PLMN string `json:"plmn"`
+	IMSI string `json:"imsi"`
+	Short string `json:"short"`
+	Operator string `json:"operator"`
+}
+
+type UEInfo struct {
+	RilImpl string `json:"ril_impl"`
+  ChipManufacturer string `json:"chip_manufacturer"`
+  MarketName string `json:"marketname"`
+  ProductManufacturer string `json:"product_manufacturer"`
+	Slot []SlotInfo `json:"slot"`
+	SN string `json:"sn"`
+  Baseband string `json:"baseband"`
+}
+
+type EquipmentStatus struct {
+	Phase string `json:"phase"`
+	RobotId string `json:"robot_id"`
+	UEDetails []UEInfo `json:"ue_details"`
+	HostStatus string `json:"host_status"`
+	HostId string `json:"host_id"`
+}
+
 type getTestEquipmentStatusRsp struct {
 	Success bool `json:"success"`
 	Message string `json:"message"`
 	Code int `json:"code"`
-	Result interface{} `json:"result"`
+	Result *EquipmentStatus `json:"result"`
 	Timestamp int64 `json:"timestamp"`
 }
 
