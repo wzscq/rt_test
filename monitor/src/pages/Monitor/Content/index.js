@@ -1,31 +1,45 @@
 import {useSelector} from 'react-redux';
 import { SplitPane } from "react-collapse-pane";
 import PropertyGrid from './PropertyGrid';
+import UEContent from './UEContent';
 import Map from './Map';
 
 import './index.css';
+import { useMemo } from 'react';
 
 export default function Content({sendMessageToParent}){
-  const data=useSelector(state=>state.data.data.length>0?state.data.data[state.data.data.length-1]:undefined);
+  const currentRobotInfo=useSelector(state=>state.data.currentRobotInfo);
+  const currentUes=useSelector(state=>state.data.currentUes);
+  
+  const ueControls=useMemo(()=>{
+    if(Object.keys(currentUes).length>0){
+      const imsiList=Object.keys(currentUes).sort((a,b)=>a>b);
+      console.log("imsiList",imsiList);
+      return imsiList.map(imsi => {
+        return (<UEContent key={imsi} imsi={imsi} />)
+      });
+    }
+    return ([<div></div>]);
+  },[currentUes]);
+
   return (
     <div className='monitor-content'>
-      <SplitPane dir='ltr'initialSizes={[65,35]} split="vertical" collapse={false}>
+      <SplitPane dir='ltr'initialSizes={[15,25,60]} split="vertical" collapse={false}>
         <div className='monitor-content-left'>
+          <PropertyGrid obj={currentRobotInfo} title="robot info"/>
+        </div>
+        <div className='monitor-content-center'>
         <SplitPane dir='rtl'initialSizes={[60,40]} split="horizontal" collapse={false}>
           <Map sendMessageToParent={sendMessageToParent}/>    
           <div></div>
         </SplitPane>
         </div>
         <div className='monitor-content-right'>
-          <SplitPane dir='rtl'initialSizes={[20,20,20,20,10]} split="horizontal" collapse={false}>
-            <PropertyGrid obj={data?.radio?.measures_common} title="common measures"/>
-            <PropertyGrid obj={data?.radio?.measures_lte} title="lte measures"/>
-            <PropertyGrid obj={data?.radio?.measures_nr} title="nr measures"/>
-            <PropertyGrid obj={data?.robot_info} title="robot info"/>
-            <PropertyGrid obj={data?.case_progress} title="case progress"/>
+          <SplitPane dir='rtl' split="horizontal" collapse={false}>
+            {ueControls}
           </SplitPane>
         </div>
       </SplitPane>
     </div>
-  )
+  );
 }

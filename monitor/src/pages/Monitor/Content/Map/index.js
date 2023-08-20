@@ -68,7 +68,7 @@ export default function Map({sendMessageToParent}){
             //获取图片文件内容
             getOriginImage(robotMap.file.list);
         }
-    },[robotMap]);
+    },[robotMap,getOriginImage]);
     
     return (
         <div className='monitor-map'>
