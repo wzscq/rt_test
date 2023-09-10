@@ -17,10 +17,7 @@ export const mqttSlice = createSlice({
     name: 'mqtt',
     initialState,
     reducers: {
-        setServerConf:(state,action)=>{
-            state.mqttConf=action.payload.mqtt;
-            state.mqttConfLoaded=true;
-        }
+        
     },
     extraReducers: (builder) => {
         //获取MQTT配置信息
@@ -44,9 +41,9 @@ export const mqttSlice = createSlice({
     }
 });
 
-export const { 
-    setServerConf    
+/*export const { 
+    
 } = mqttSlice.actions
-
+*/
 
 export default mqttSlice.reducer

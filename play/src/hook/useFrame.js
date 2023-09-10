@@ -2,9 +2,8 @@ import { useEffect,useCallback } from 'react';
 import {useSelector,useDispatch} from 'react-redux';
 
 import {setParam} from '../redux/frameSlice';
-import {setDevice} from '../redux/dataSlice';
+import {setDevice,setTestFileContent,setRobotMapRecord} from '../redux/dataSlice';
 import {setLocale} from '../redux/i18nSlice';
-import {setServerConf} from '../redux/mqttSlice';
 
 import {
     FRAME_MESSAGE_TYPE,
@@ -44,8 +43,10 @@ export default function useFrame(){
                 //dispatch(setDefinition(data));
             } else if (dataType===DATA_TYPE.QUERY_RESULT){
                 dispatch(setDevice(data));
-            } else if (dataType===DATA_TYPE.SERVER_CONF){
-                dispatch(setServerConf(data));
+            } else if (dataType===DATA_TYPE.TEST_FILE_CONENT) {
+                dispatch(setTestFileContent(data));
+            } else if (dataType===DATA_TYPE.ROBOT_MAP_RECORD) {
+                dispatch(setRobotMapRecord(data));
             } else {
                 console.log("update data with wrong data type:",dataType);
             }

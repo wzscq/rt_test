@@ -27,6 +27,7 @@ const (
 	ResultNoTaskUe = 10200010
 	ResultNoTaskUeTc = 10200011
 	ResultConvertPGM2PNGError = 10200012
+	ResultFileNotExist = 10200013
 )
 
 var errMsg = map[int]CommonRsp{
@@ -93,6 +94,11 @@ var errMsg = map[int]CommonRsp{
 	ResultConvertPGM2PNGError:CommonRsp{
 		ErrorCode:ResultConvertPGM2PNGError,
 		Message:"PGM格式图片转换为PNG格式图片失败，请检查图片格式是否正确",
+		Error:true,
+	},
+	ResultFileNotExist:CommonRsp{
+		ErrorCode:ResultFileNotExist,
+		Message:"请求的测试文件不存在",
 		Error:true,
 	},
 }

@@ -5,8 +5,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"rt_test_service/common"
 	"rt_test_service/robot"
+	"rt_test_service/mqtt"
 	"rt_test_service/crv"
 	"rt_test_service/device"
+	"rt_test_service/testfile"
 	"log"
 	"time"
 )
@@ -61,6 +63,20 @@ func main() {
 		AppID:conf.CRV.AppID,
 	}
 
+	//初始化测试文件处理对象
+	tfp:=testfile.InitTestFilePool(conf.TestFile.Path,conf.TestFile.IdleBeforeClose,crvClient)
+	
+	//初始化MQTT客户端
+	mqttClient:=mqtt.MQTTClient{
+		Broker:conf.Mqtt.Broker,
+		User:conf.Mqtt.User,
+		Password:conf.Mqtt.Password,
+		UploadMeasurementMetrics:conf.Mqtt.UploadMeasurementMetrics,
+		Handler:tfp,
+		Port:conf.Mqtt.Port,
+	}
+	mqttClient.Init()
+
 	rtc:=robot.RobotController{
 		RobotClient:robotClient,
 		CRVClient:crvClient,
@@ -73,6 +89,11 @@ func main() {
 		FtpConf:&conf.Ftp,
 	}
 	dc.Bind(router)
+
+	tc:=testfile.TestFileController{
+		OutPath:conf.TestFile.Path,
+	}
+	tc.Bind(router)
 	
 	router.Run(conf.Service.Port)
 }

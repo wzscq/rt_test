@@ -86,38 +86,55 @@ export function createDownloadFileMessage(file,fileName){
     };   
 }
 
-///device/getServerConf
 
-const opUpdateServerConf={
+const opUpdateFileContent={
     type:OP_TYPE.UPDATE_FRAME_DATA,
     params:{
-        dataType:DATA_TYPE.SERVER_CONF
+        dataType:DATA_TYPE.TEST_FILE_CONENT
     }
 }
 
 const REDIRECT_URL='/redirect';
-const RT_SERVICE_GET_SERVERCONF='rtservice/device/getServerConf';
+const RT_SERVICE_GET_FILE_CONTENT='rtservice/testfile/GetContent';
 
-const opGetServerConf={
+const opGetFileContent={
     type:OP_TYPE.REQUEST,
     params:{
         url:REDIRECT_URL,
         method:"post"
     },
-    input:{
-        to:RT_SERVICE_GET_SERVERCONF
-    },
-    description:{key:'page.rtservice.monitor.getServerConf',default:'获取服务器配置数据'},
+    input:{},
+    description:{key:'page.rtservice.play.getfilecontent',default:'获取测试文件数据'},
     queenable:true
 }
 
-export function createGetServerConfMessage(frameParams){
-    opUpdateServerConf.params={...opUpdateServerConf.params,...frameParams};
-    opGetServerConf.successOperation=opUpdateServerConf;
+export function createGetTestFileContentMessage(frameParams,device){
+    opUpdateFileContent.params={...opUpdateFileContent.params,...frameParams};
+    opGetFileContent.input={...device,to:RT_SERVICE_GET_FILE_CONTENT};
+    opGetFileContent.successOperation=opUpdateFileContent;
     return {
         type:FRAME_MESSAGE_TYPE.DO_OPERATION,
         data:{
-            operationItem:opGetServerConf
+            operationItem:opGetFileContent
+        }
+    };   
+}
+
+const opUpdateMap={
+    type:OP_TYPE.UPDATE_FRAME_DATA,
+    params:{
+        dataType:DATA_TYPE.ROBOT_MAP_RECORD
+    }
+}
+
+export function createQueryMapMessage(frameParams,queryParams){
+    opUpdateMap.params={...opUpdateMap.params,...frameParams};
+    opQueryData.input=queryParams;
+    opQueryData.successOperation=opUpdateMap;
+    return {
+        type:FRAME_MESSAGE_TYPE.DO_OPERATION,
+        data:{
+            operationItem:opQueryData
         }
     };   
 }

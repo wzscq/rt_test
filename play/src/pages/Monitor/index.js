@@ -6,39 +6,20 @@ import Content from "./Content"
 
 import './index.css';
 import PageLoading from "./PageLoading";
-import { createQueryDataMessage,createGetServerConfMessage } from '../../utils/normalOperations';
+import { createQueryDataMessage } from '../../utils/normalOperations';
 
 const queryFields=[
   {field:'id'},
-  {field:'host_status'},
-  {field:'host_id'},
-  {
-    field:'robot_map',
-    fieldType:'one2many',
-    relatedModelID:'rt_robot_map',
-    relatedField:'robot_id',
-    sorter:[{field:'id',order:'desc'}],
-    pagination:{current:1,pageSize:1},
-    fields:[
-      {field:'id'},
-      {field:'robot_id'},
-      {field:'picture_id'},
-      {field:'picture_name'},
-      {field:'building_code'},
-      {field:'floor'},
-      {
-        field:'file',
-        fieldType:'file',
-      },
-    ]
-  }
+  {field:'device_id'},
+  {field:'timestamp'},
+  {field:'start_time'},
+  {field:'line_count'}
 ]
 
 export default function Monitor(){
   const sendMessageToParent=useFrame();
   const {origin,item}=useSelector(state=>state.frame);
   const deviceLoaded=useSelector(state=>state.data.deviceLoaded);
-  const mqttConfLoaded=useSelector(state=>state.mqtt.mqttConfLoaded);
 
   useEffect(()=>{
     if(deviceLoaded===false){
@@ -59,21 +40,17 @@ export default function Monitor(){
             };
             sendMessageToParent(createQueryDataMessage(frameParams,queryParams));
         }
-    } else if(mqttConfLoaded===false){
-      const frameParams={
-        frameType:item.frameType,
-        frameID:item.params.key,
-        origin:origin
-      };
-      sendMessageToParent(createGetServerConfMessage(frameParams));
     }
-  },[deviceLoaded,mqttConfLoaded,item,origin,sendMessageToParent]);
+  },[deviceLoaded,item,origin,sendMessageToParent]);
 
 
   return (
   <div className="monitor-main">
-    {deviceLoaded&&mqttConfLoaded?
-      (<><Header/><Content sendMessageToParent={sendMessageToParent}/></>):
+    {deviceLoaded?
+      (<>
+        <Header sendMessageToParent={sendMessageToParent}/>
+        <Content sendMessageToParent={sendMessageToParent}/>
+       </>):
       (<PageLoading/>)}
   </div>);
 }

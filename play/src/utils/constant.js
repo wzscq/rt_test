@@ -42,7 +42,8 @@ export const FRAME_MESSAGE_TYPE={
 export const DATA_TYPE={
     MODEL_CONF:'modelConf',//"DATA_TYPE_MODEL_CONF",   //模型配置数据
     QUERY_RESULT:'queryResult',//"DATA_TYPE_QUERY_RESULT",   //数据查询结果
-    SERVER_CONF:'serverConf',//"DATA_TYPE_SERVER_CONF",   //服务器配置
+    TEST_FILE_CONENT:'testFileContent',//"DATA_TYPE_TEST_FILE_CONENT",   //测试文件内容
+    ROBOT_MAP_RECORD:'robotMapRec',//"DATA_TYPE_ROBOT_MAP",   //机器人地图
 }
 
 export const FORM_TYPE={

@@ -50,6 +50,11 @@ type MqttConf struct {
 	UploadMeasurementMetrics string `json:"uploadMeasurementMetrics"`
 }
 
+type TestfileConf struct {
+	Path string `json:"path"`
+	IdleBeforeClose string `json:"idleBeforeClose"`
+}
+
 type FtpConf struct {
 	Host string `json:"host"`
 	Port int `json:"port"`
@@ -65,6 +70,7 @@ type Config struct {
 	CRV crvConf `json:"crv"`
 	Mqtt MqttConf `json:"mqtt"`
 	Ftp FtpConf `json:"ftp"`
+	TestFile TestfileConf `json:"testFile"`
 }
 
 var gConfig Config
