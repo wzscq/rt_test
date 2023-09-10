@@ -19,6 +19,6 @@ if [ -e package/web/play ]; then
   rm -rf package/web/play
 fi
 
-mv ../monitor/build ./package/web/play
+mv ../play/build ./package/web/play
 
 echo play package build over.
