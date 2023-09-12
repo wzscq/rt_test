@@ -17,5 +17,5 @@ docker save -o rtservice.tar wangzhsh/rtservice:0.1.0
 docker load -i rtservice.tar
 
 #run smartlock in docker
-docker run -d --name rtservice -p8300:80 -v /root/rtservice/conf:/services/rtservice/conf wangzhsh/rtservice:0.1.0
+docker run -d --name rtservice -p8300:80 -v /root/rtservice/localcache:/services/rtservice/localcache -v /root/rtservice/conf:/services/rtservice/conf wangzhsh/rtservice:0.1.0
 

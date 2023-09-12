@@ -38,7 +38,7 @@
         "wsPort":9101,
         "user":"mosquitto",
         "password":"123456",
-        "uploadMeasurementMetrics":"measurementMetrics/upload"
+        "uploadMeasurementMetrics":"realtime_measurement_reporting/"
     },
     "ftp":{
         "host":"",

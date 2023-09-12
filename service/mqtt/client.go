@@ -82,6 +82,10 @@ func (mqc *MQTTClient)Publish(topic,content string)(int){
 func (mqc *MQTTClient) Init(){
 	mqc.Client=mqc.getClient()
 	if mqc.Client != nil {
-		mqc.Client.Subscribe(mqc.UploadMeasurementMetrics+"/#",0,mqc.onUploadMeasurementMetrics)
+		topic:=mqc.UploadMeasurementMetrics+"#"
+		log.Println("MQTTClient Subscribe topic:"+topic)
+		mqc.Client.Subscribe(topic,0,mqc.onUploadMeasurementMetrics)
+	} else {
+		log.Println("mqtt client is null")
 	}
 }
