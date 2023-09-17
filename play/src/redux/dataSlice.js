@@ -346,53 +346,55 @@ export const dataSlice = createSlice({
         state.currentPos=action.payload;
       },
       setTestFileContent:(state,action)=>{
-        const content=JSON.parse(action.payload[0]);
-        //这里暂时不保留历史数据
-        state.data=[content];
-        //更新robotinfo
-        state.currentRobotInfo={...content.robot_info,pcTime:content.pcTime};
-        //更新robot_map
-        if(state.robot_map.robot_id!==content.robot_info.robot_id||
-          state.robot_map.map_id!==content.robot_info.map_id){
-          state.robot_map={robot_id:content.robot_info.robot_id,map_id:content.robot_info.map_id};
+        if(action.payload[0]){
+          const content=JSON.parse(action.payload[0]);
+          //这里暂时不保留历史数据
+          state.data=[content];
+          //更新robotinfo
+          state.currentRobotInfo={...content.robot_info,pcTime:content.pcTime};
+          //更新robot_map
+          if(state.robot_map.robot_id!==content.robot_info.robot_id||
+            state.robot_map.map_id!==content.robot_info.map_id){
+            state.robot_map={robot_id:content.robot_info.robot_id,map_id:content.robot_info.map_id};
+          }
+          //收敛event和message，设置当前UE信息
+          content.data.forEach(dataItem => {
+            if(dataItem.event?.length>0){
+              const imsi=dataItem.case_progress?.imsi;
+              let eventPool=state.event[imsi];
+              if(eventPool&&eventPool.length>0){
+                const lastEventItem=eventPool[eventPool.length-1];
+                dataItem.event.forEach(eventItem=>{
+                  if(eventItem.EventTime>lastEventItem.EventTime){
+                    eventPool.push(eventItem);
+                  }
+                });
+              } else {
+                eventPool=[...dataItem.event];
+              }
+              state.event={...state.event,[imsi]:[...eventPool]};
+            }
+
+            if(dataItem.msg?.length>0){
+              const imsi=dataItem.case_progress?.imsi;
+              let msgPool=state.message[imsi];
+              if(msgPool&&msgPool.length>0){
+                const lastMsgItem=msgPool[msgPool.length-1];
+                dataItem.msg.forEach(msgItem=>{
+                  if(msgItem.MsgTime>lastMsgItem.MsgTime){
+                    msgPool.push(msgItem);
+                  }
+                });
+              } else {
+                msgPool=[...dataItem.msg];
+              }
+              state.message={...state.message,[imsi]:[...msgPool]};
+            }
+
+            //设置当前UE信息
+            state.currentUes[dataItem.case_progress.imsi]={...dataItem};
+          });
         }
-        //收敛event和message，设置当前UE信息
-        content.data.forEach(dataItem => {
-          if(dataItem.event?.length>0){
-            const imsi=dataItem.case_progress?.imsi;
-            let eventPool=state.event[imsi];
-            if(eventPool&&eventPool.length>0){
-              const lastEventItem=eventPool[eventPool.length-1];
-              dataItem.event.forEach(eventItem=>{
-                if(eventItem.EventTime>lastEventItem.EventTime){
-                  eventPool.push(eventItem);
-                }
-              });
-            } else {
-              eventPool=[...dataItem.event];
-            }
-            state.event={...state.event,[imsi]:[...eventPool]};
-          }
-
-          if(dataItem.msg?.length>0){
-            const imsi=dataItem.case_progress?.imsi;
-            let msgPool=state.message[imsi];
-            if(msgPool&&msgPool.length>0){
-              const lastMsgItem=msgPool[msgPool.length-1];
-              dataItem.msg.forEach(msgItem=>{
-                if(msgItem.MsgTime>lastMsgItem.MsgTime){
-                  msgPool.push(msgItem);
-                }
-              });
-            } else {
-              msgPool=[...dataItem.msg];
-            }
-            state.message={...state.message,[imsi]:[...msgPool]};
-          }
-
-          //设置当前UE信息
-          state.currentUes[dataItem.case_progress.imsi]={...dataItem};
-        });
       },
       setRobotMapRecord:(state,action)=>{
         state.robot_map_record=action.payload;

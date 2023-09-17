@@ -70,18 +70,30 @@ export default function Header({sendMessageToParent}){
     }
   },[play,speed,currentRobotInfo]);
 
+  const convertTimestamptoTime=(unixTimestamp)=>{
+    // Convert to milliseconds and
+    // then create a new Date object
+    let dateObj = new Date(unixTimestamp * 1000);
+    let utcString = dateObj.toTimeString();
+    
+    return utcString.substring(0,8);
+}
+
+  const curTime=convertTimestamptoTime(currentRobotInfo?.pcTime);
+  //unix time to 
+
   return (
     <div className='monitor-header'>
       <div className='title'>{'Device: '+device?.device_id+" Start Time: "+device?.start_time}</div>
       <div className='control'>
         <Space>
-          <div>{currentRobotInfo?.record?.substr(10)}</div>
+          <div>{curTime}</div>
           <Select size={'small'}  onChange={(value)=>setSpeed(value)} value={speed} options={options}/>
           <Button size={'small'} type="primary" onClick={()=>setPlay(!play)} icon={play===false?<CaretRightOutlined/>:<PauseOutlined />}></Button>
         </Space>
       </div>
       <div className='slider'>
-        <Slider defaultValue={1} dots={true} value={currentPos} max={device.line_count} min={1} onChange={onChange} railStyle={{backgroundColor:"#FFF"}}/>
+        <Slider defaultValue={1} dots={false} value={currentPos} max={device.line_count} min={1} onChange={onChange} railStyle={{backgroundColor:"#FFF"}}/>
       </div>
     </div>
   );
