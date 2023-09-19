@@ -48,8 +48,8 @@ export default function ListGrid({list,title,name,nameField,timeField}){
           onMouseUp={onSplitMouseUp}>
     <div className='list-grid-title'>{title}</div>
     <div className='col-title'>
-        <div className='name' style={{width:splitLeft}}>{name}</div>
-        <div className='value' style={{width:'calc(100% - '+(splitLeft+1)+'px)'}}>time</div>
+        <div className='name' style={{width:splitLeft}}>time</div>
+        <div className='value' style={{width:'calc(100% - '+(splitLeft+1)+'px)'}}>{name}</div>
     </div>
     <div className='list-grid-content'>
       {rows}

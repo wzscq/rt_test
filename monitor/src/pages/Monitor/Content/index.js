@@ -24,6 +24,19 @@ export default function Content({sendMessageToParent}){
 
   return (
     <div className='monitor-content'>
+      <SplitPane dir='ltr'initialSizes={[40,60]} split="vertical" collapse={false}>
+        <Map sendMessageToParent={sendMessageToParent}/>    
+        <div className='monitor-content-right'>
+          <SplitPane dir='rtl' split="horizontal" collapse={false}>
+            {ueControls}
+          </SplitPane>
+        </div>
+      </SplitPane>
+    </div>
+  );
+
+  /*return (
+    <div className='monitor-content'>
       <SplitPane dir='ltr'initialSizes={[15,25,60]} split="vertical" collapse={false}>
         <div className='monitor-content-left'>
           <PropertyGrid obj={currentRobotInfo} title="robot info"/>
@@ -41,5 +54,5 @@ export default function Content({sendMessageToParent}){
         </div>
       </SplitPane>
     </div>
-  );
+  );*/
 }
