@@ -27,3 +27,6 @@ docker run -d --name rtservice -p8300:80 -v /root/rtservice/localcache:/services
     rt_indicator
     rt_indicator_legend
 4、增加对应菜单项。
+
+20230920
+2、修改play页面，补充了对指标的选择和图例的显示功能。

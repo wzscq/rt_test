@@ -8,7 +8,7 @@ import './index.css';
 import { useMemo } from 'react';
 
 export default function Content({sendMessageToParent}){
-  const currentRobotInfo=useSelector(state=>state.data.currentRobotInfo);
+  //const currentRobotInfo=useSelector(state=>state.data.currentRobotInfo);
   const currentUes=useSelector(state=>state.data.currentUes);
   
   const ueControls=useMemo(()=>{

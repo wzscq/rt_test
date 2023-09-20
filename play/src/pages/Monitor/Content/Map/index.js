@@ -109,7 +109,7 @@ export default function Map({sendMessageToParent}){
     
     return (
         <div className='monitor-map'>
-            <Header mapInfo={robotMapRec}/>
+            <Header mapInfo={robotMapRec} sendMessageToParent={sendMessageToParent}/>
             <Content mapInfo={robotMapRec} map={fileList[0]}/>
         </div>
     );

@@ -1,8 +1,11 @@
 import {useSelector} from 'react-redux';
 
+import Indicator from './Indicator';
+
 import './index.css';
 
 export default function Content({map}){
+    const indicator=useSelector(state=>state.data.indicator);
     const data=useSelector(state=>state.data.data);
 
     const points=data.map(dataItem=>{
@@ -14,6 +17,7 @@ export default function Content({map}){
 
     return (
         <div className="monitor-map-content">
+            <Indicator indicator={indicator}/>
             <img src={map?.url} alt='' />
             {points}
         </div>

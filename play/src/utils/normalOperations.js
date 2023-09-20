@@ -131,6 +131,7 @@ export function createQueryMapMessage(frameParams,queryParams){
     opUpdateMap.params={...opUpdateMap.params,...frameParams};
     opQueryData.input=queryParams;
     opQueryData.successOperation=opUpdateMap;
+    opQueryData.queenable=true;
     return {
         type:FRAME_MESSAGE_TYPE.DO_OPERATION,
         data:{
