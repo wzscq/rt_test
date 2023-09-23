@@ -96,6 +96,7 @@ const opUpdateFileContent={
 
 const REDIRECT_URL='/redirect';
 const RT_SERVICE_GET_FILE_CONTENT='rtservice/testfile/GetContent';
+const RT_SERVICE_GET_FILE_POINTS='rtservice/testfile/GetPoints';
 
 const opGetFileContent={
     type:OP_TYPE.REQUEST,
@@ -118,6 +119,36 @@ export function createGetTestFileContentMessage(frameParams,device){
             operationItem:opGetFileContent
         }
     };   
+}
+
+const opUpdateFilePoints={
+    type:OP_TYPE.UPDATE_FRAME_DATA,
+    params:{
+        dataType:DATA_TYPE.TEST_FILE_POINTS
+    }
+}
+
+const opGetFilePoints={
+    type:OP_TYPE.REQUEST,
+    params:{
+        url:REDIRECT_URL,
+        method:"post"
+    },
+    input:{},
+    description:{key:'page.rtservice.play.getfilecontent',default:'获取测试文件数据'},
+    queenable:true
+}
+
+export function createGetTestFilePointsMessage(frameParams,device){
+    opUpdateFileContent.params={...opUpdateFileContent.params,...frameParams};
+    opGetFilePoints.input={...device,to:RT_SERVICE_GET_FILE_POINTS};
+    opGetFilePoints.successOperation=opUpdateFilePoints;
+    return {
+        type:FRAME_MESSAGE_TYPE.DO_OPERATION,
+        data:{
+            operationItem:opGetFilePoints
+        }
+    };
 }
 
 const opUpdateMap={

@@ -6,7 +6,9 @@ import Content from "./Content"
 
 import './index.css';
 import PageLoading from "./PageLoading";
-import { createQueryDataMessage } from '../../utils/normalOperations';
+import { 
+  createQueryDataMessage,
+  createGetTestFilePointsMessage } from '../../utils/normalOperations';
 
 const queryFields=[
   {field:'id'},
@@ -20,6 +22,8 @@ export default function Monitor(){
   const sendMessageToParent=useFrame();
   const {origin,item}=useSelector(state=>state.frame);
   const deviceLoaded=useSelector(state=>state.data.deviceLoaded);
+  const pointsLoaded=useSelector(state=>state.data.pointsLoaded);
+  const device=useSelector(state=>state.data.device.list?state.data.device.list[0]:undefined);
 
   useEffect(()=>{
     if(deviceLoaded===false){
@@ -43,6 +47,19 @@ export default function Monitor(){
     }
   },[deviceLoaded,item,origin,sendMessageToParent]);
 
+  useEffect(()=>{
+    if(pointsLoaded===false&&deviceLoaded===true){
+      if(device){
+        const frameParams={
+          frameType:item.frameType,
+          frameID:item.params.key,
+          origin:origin
+        };
+        sendMessageToParent(createGetTestFilePointsMessage(frameParams,{deviceID:device.device_id,timestamp:device.timestamp,from:0,to1:0}));
+      }
+    }
+  },
+  [deviceLoaded,device,pointsLoaded,item,sendMessageToParent]);
 
   return (
   <div className="monitor-main">

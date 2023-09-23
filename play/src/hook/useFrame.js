@@ -2,7 +2,7 @@ import { useEffect,useCallback } from 'react';
 import {useSelector,useDispatch} from 'react-redux';
 
 import {setParam} from '../redux/frameSlice';
-import {setDevice,setTestFileContent,setRobotMapRecord} from '../redux/dataSlice';
+import {setDevice,setTestFileContent,setRobotMapRecord,setPoints} from '../redux/dataSlice';
 import {setLocale} from '../redux/i18nSlice';
 
 import {
@@ -47,6 +47,8 @@ export default function useFrame(){
                 dispatch(setTestFileContent(data));
             } else if (dataType===DATA_TYPE.ROBOT_MAP_RECORD) {
                 dispatch(setRobotMapRecord(data));
+            } else if (dataType===DATA_TYPE.TEST_FILE_POINTS){
+                dispatch(setPoints(data));
             } else {
                 console.log("update data with wrong data type:",dataType);
             }

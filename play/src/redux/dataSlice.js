@@ -288,7 +288,9 @@ const initialState = {
     },
     robot_map:{},
     robot_map_record:undefined,
-    indicator:null
+    indicator:null,
+    points:[],
+    pointsLoaded:false,
 }
 
 export const dataSlice = createSlice({
@@ -402,7 +404,11 @@ export const dataSlice = createSlice({
       },
       setIndicator:(state,action)=>{
         state.indicator=action.payload;
-      }
+      },
+      setPoints:(state,action)=>{
+        state.points=action.payload;
+        state.pointsLoaded=true;
+      },
     }
 });
 
@@ -412,7 +418,8 @@ export const {
   setCurrentPos,
   setTestFileContent,
   setRobotMapRecord,
-  setIndicator
+  setIndicator,
+  setPoints
 } = dataSlice.actions
 
 export default dataSlice.reducer

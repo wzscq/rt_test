@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"strconv"
 	"io"
+	"encoding/json"
 )
 
 type TestFile struct {
@@ -87,6 +88,30 @@ func (tf *TestFile)GetContent(from,to int64)([]string){
 		log.Println(lines)
     }
 	log.Println(lines)
+	return lines
+}
+
+func (tf *TestFile)GetPoints()([]map[string]interface{}){
+	//文件复位
+	_, err := tf.ContentFile.Seek(0, io.SeekStart)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
+	lines:=[]map[string]interface{}{}
+	scanner := bufio.NewScanner(tf.ContentFile)
+	for scanner.Scan() {
+		var result map[string]interface{}
+		err := json.Unmarshal(scanner.Bytes(), &result)
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+
+		robotInfo:=result["robot_info"].(map[string]interface{})
+		lines=append(lines,robotInfo)
+  }
 	return lines
 }
 

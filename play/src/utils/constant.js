@@ -44,6 +44,7 @@ export const DATA_TYPE={
     QUERY_RESULT:'queryResult',//"DATA_TYPE_QUERY_RESULT",   //数据查询结果
     TEST_FILE_CONENT:'testFileContent',//"DATA_TYPE_TEST_FILE_CONENT",   //测试文件内容
     ROBOT_MAP_RECORD:'robotMapRec',//"DATA_TYPE_ROBOT_MAP",   //机器人地图
+    TEST_FILE_POINTS:'testFilePoints'
 }
 
 export const FORM_TYPE={

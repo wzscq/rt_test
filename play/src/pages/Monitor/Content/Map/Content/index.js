@@ -7,7 +7,7 @@ import './index.css';
 export default function Content({map}){
     const indicator=useSelector(state=>state.data.indicator);
     const data=useSelector(state=>state.data.data);
-
+    
     const points=data.map(dataItem=>{
         const {pixel_x,pixel_y}=dataItem.robot_info;
         return (

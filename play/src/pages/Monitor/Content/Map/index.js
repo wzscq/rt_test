@@ -54,7 +54,6 @@ export default function Map({sendMessageToParent}){
         }
     },[robotMap]);
 
-
     const getOriginImage=useCallback((files)=>{
         const frameParams={
             frameType:frameItem.frameType,
