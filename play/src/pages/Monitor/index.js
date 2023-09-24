@@ -7,8 +7,7 @@ import Content from "./Content"
 import './index.css';
 import PageLoading from "./PageLoading";
 import { 
-  createQueryDataMessage,
-  createGetTestFilePointsMessage } from '../../utils/normalOperations';
+  createQueryDataMessage } from '../../utils/normalOperations';
 
 const queryFields=[
   {field:'id'},
@@ -16,15 +15,13 @@ const queryFields=[
   {field:'timestamp'},
   {field:'start_time'},
   {field:'line_count'}
-]
+];
 
 export default function Monitor(){
   const sendMessageToParent=useFrame();
   const {origin,item}=useSelector(state=>state.frame);
   const deviceLoaded=useSelector(state=>state.data.deviceLoaded);
-  const pointsLoaded=useSelector(state=>state.data.pointsLoaded);
-  const device=useSelector(state=>state.data.device.list?state.data.device.list[0]:undefined);
-
+  
   useEffect(()=>{
     if(deviceLoaded===false){
     //目前的表单页面仅支持单条数据的编辑和展示
@@ -46,20 +43,6 @@ export default function Monitor(){
         }
     }
   },[deviceLoaded,item,origin,sendMessageToParent]);
-
-  useEffect(()=>{
-    if(pointsLoaded===false&&deviceLoaded===true){
-      if(device){
-        const frameParams={
-          frameType:item.frameType,
-          frameID:item.params.key,
-          origin:origin
-        };
-        sendMessageToParent(createGetTestFilePointsMessage(frameParams,{deviceID:device.device_id,timestamp:device.timestamp,from:0,to1:0}));
-      }
-    }
-  },
-  [deviceLoaded,device,pointsLoaded,item,sendMessageToParent]);
 
   return (
   <div className="monitor-main">

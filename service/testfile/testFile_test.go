@@ -126,37 +126,8 @@ func _TestCreateFile(t *testing.T) {
 	tf.Close()
 }
 
-func _TestReadFile(t *testing.T){
-	log.SetFlags(log.Lshortfile | log.LstdFlags)
-	outPath:="../localcache/"
-	deviceID:="device1"
-	var timeStamp int64 
-	timeStamp=1693636403
-	tf:=GetTestFile(outPath,deviceID,timeStamp)
-	if tf==nil {
-		t.Error("GetTestFile failed")
-		return
-	}
-	defer tf.Close()
 
-	idxContent:=tf.GetIdxContent()
-	log.Println(idxContent)
-
-	for i:=0;i<10;i++ {
-		lines:=tf.GetContent(i,i+1)
-		if lines==nil || len(lines)==0 {
-			t.Error("GetContent failed i:="+strconv.Itoa(i))
-			return
-		}
-
-		if lines[0]!="line"+strconv.Itoa(i) {
-			t.Error("GetContent failed i:="+strconv.Itoa(i))
-			return
-		}
-	}
-}
-
-func TestTestFilePool(t *testing.T){
+func _TestTestFilePool(t *testing.T){
 	
 	crvClient:=&crv.CRVClient{
 		Server:"http://127.0.0.1:8200",
@@ -176,5 +147,65 @@ func TestTestFilePool(t *testing.T){
 		tfp.WriteDeviceTestLine("device2",string(reportDataJson))
 	}
 	time.Sleep(8*time.Second)
+}
+
+func TestGetFilePoints(t *testing.T){
+	outPath:="../localcache"
+	deviceID:="BFEBFBFF000806EC"
+	var timestamp int64=1694409161
+
+	tf:=GetTestFile(outPath,deviceID,timestamp)
+	if tf==nil {
+		t.Error("TestFileController GetPoints file not exist.")
+		return
+	}
+	defer tf.CloseReadOnly()
+
+	indicator:=Indicator{
+		ExtractPath:"radio.measures_lte.RSRP",
+		ID:"1",
+		Name:"test",
+		Legend:IndicatorLegend{
+			ModelID:"model",
+			Total:3,
+			List:[]IndicatorLegendItem{
+				IndicatorLegendItem{
+					ID:"id",
+					SN:"1",
+					Start:"",
+					End:"-80.75",
+					RGB:"#110000",
+				},
+				IndicatorLegendItem{
+					ID:"id",
+					SN:"2",
+					Start:"-80.75",
+					End:"-80.50",
+					RGB:"#220000",
+				},
+				IndicatorLegendItem{
+					ID:"id",
+					SN:"2",
+					Start:"-80.50",
+					End:"-80.24",
+					RGB:"#330000",
+				},
+				IndicatorLegendItem{
+					ID:"id",
+					SN:"2",
+					Start:"-80.25",
+					End:"",
+					RGB:"#440000",
+				},
+			},
+		},
+	}
+
+	//获取文件内容
+	points:=tf.GetPoints(indicator)
+
+	pointsJson,_:=json.Marshal(points)	
+
+	log.Println(string(pointsJson))
 }
 

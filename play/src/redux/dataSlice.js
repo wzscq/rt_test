@@ -289,7 +289,11 @@ const initialState = {
     robot_map:{},
     robot_map_record:undefined,
     indicator:null,
-    points:[],
+    points:[
+      {pixel_x:10,pixel_y:10,rgb:'#FF0000',value:123},
+      {pixel_x:20,pixel_y:10,rgb:'#00FF00',value:456},
+      {pixel_x:30,pixel_y:10,rgb:'#0000FF',value:789}
+    ],
     pointsLoaded:false,
 }
 

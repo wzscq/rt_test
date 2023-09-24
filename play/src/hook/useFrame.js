@@ -48,6 +48,7 @@ export default function useFrame(){
             } else if (dataType===DATA_TYPE.ROBOT_MAP_RECORD) {
                 dispatch(setRobotMapRecord(data));
             } else if (dataType===DATA_TYPE.TEST_FILE_POINTS){
+                console.log('pointsdata:',data);
                 dispatch(setPoints(data));
             } else {
                 console.log("update data with wrong data type:",dataType);

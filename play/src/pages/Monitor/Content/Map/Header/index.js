@@ -3,6 +3,7 @@ import {Select} from 'antd';
 import {useSelector,useDispatch} from 'react-redux';
 
 import {FRAME_MESSAGE_TYPE} from '../../../../../utils/constant';
+import {createGetTestFilePointsMessage} from '../../../../../utils/normalOperations';
 import { setIndicator } from '../../../../../redux/dataSlice';
 
 import './index.css';
@@ -11,6 +12,7 @@ const { Option } = Select;
 const queryFields=[
     {field:'id'},
     {field:'name'},
+    {field:'extract_path'},
     {
         field:'legend',
         fieldType:'one2many',
@@ -30,6 +32,8 @@ const queryFields=[
 
 export default function Header({mapInfo,sendMessageToParent}){
     const {origin,item:frameItem}=useSelector(state=>state.frame);
+    const device=useSelector(state=>state.data.device.list?state.data.device.list[0]:undefined);
+
     const [options,setOptions]=useState([]);
     const [selectValue,setSelectValue]=useState('');
     const dispatch=useDispatch();
@@ -70,6 +74,15 @@ export default function Header({mapInfo,sendMessageToParent}){
         setSelectValue(value);
         const indicator=options.find(item=>item.id===value);
         dispatch(setIndicator(indicator));
+
+        if(device){
+            const frameParams={
+                frameType:frameItem.frameType,
+                frameID:frameItem.params.key,
+                origin:origin
+            };
+            sendMessageToParent(createGetTestFilePointsMessage(frameParams,{deviceID:device.device_id,timestamp:device.timestamp,indicator:indicator}));
+        }
     }
 
     const onFocus=()=>{

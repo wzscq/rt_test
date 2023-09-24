@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"io"
 	"encoding/json"
+	"strings"
 )
 
 type TestFile struct {
@@ -17,6 +18,13 @@ type TestFile struct {
 	LineCount int64
 	//下面两个字段用于控制文件超时关闭
 	lastLineCount int64
+}
+
+type Point struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	RGB string `json:"rgb"`
+	Value float64  `json:"value"`
 }
 
 func (tf *TestFile) Close() {
@@ -91,7 +99,96 @@ func (tf *TestFile)GetContent(from,to int64)([]string){
 	return lines
 }
 
-func (tf *TestFile)GetPoints()([]map[string]interface{}){
+func (tf *TestFile)getDataItme(line map[string]interface{})(map[string]interface{}){
+	data,ok:=line["data"].([]interface{})
+	if !ok {
+		return nil
+	}
+
+	if len(data)==0 {
+		return nil
+	}
+
+	dataItem:=data[0].(map[string]interface{})
+	return dataItem
+}
+
+func (tf *TestFile)getIndicator(line map[string]interface{},extractPath string)(*float64){
+	//首先获取data数据的第一个数据，目前仅考虑第一个
+	dataItem:=tf.getDataItme(line)
+	if dataItem==nil {
+		return nil
+	}
+
+	pathNodes:=strings.Split(extractPath, ".")
+	lastIndex:=len(pathNodes)-1
+	for idx,pathItem:=range pathNodes {
+		if idx<lastIndex {
+			dataItem=dataItem[pathItem].(map[string]interface{})
+			if dataItem==nil {
+				return nil
+			}
+		} else {
+			break
+		}
+	}
+
+	valueData,ok:=dataItem[pathNodes[lastIndex]].(string)
+	if !ok {
+		return nil
+	}
+
+	val,err:=strconv.ParseFloat(valueData,64)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	return &val
+}
+
+func (tf *TestFile)getLegendItem(value float64,legendItems []IndicatorLegendItem)(*IndicatorLegendItem){
+	for _,legendItem:=range legendItems {
+		if legendItem.End == "" {
+			return &legendItem
+		}
+
+		endVal,_:=strconv.ParseFloat(legendItem.End,64)
+		if endVal>=value {
+			return &legendItem
+		}
+	}
+	return nil
+}
+
+func (tf *TestFile)getPoint(line map[string]interface{},indicator Indicator)(*Point){
+	robotInfo,ok:=line["robot_info"].(map[string]interface{})
+	if(!ok){
+		return nil
+	}
+
+	x,_:=robotInfo["pixel_x"].(float64)
+	y,_:=robotInfo["pixel_y"].(float64)
+	
+	value:=tf.getIndicator(line,indicator.ExtractPath)
+	if value==nil {
+		return nil
+	}
+
+	color:="#000000"
+	legendItem:=tf.getLegendItem(*value,indicator.Legend.List)
+	if legendItem!=nil {
+		color=legendItem.RGB
+	}
+	return &Point{
+		X:x,
+		Y:y,
+		RGB:color,
+		Value:*value,
+	}
+}
+
+func (tf *TestFile)GetPoints(indicator Indicator)([]*Point){
 	//文件复位
 	_, err := tf.ContentFile.Seek(0, io.SeekStart)
 	if err != nil {
@@ -99,20 +196,19 @@ func (tf *TestFile)GetPoints()([]map[string]interface{}){
 		return nil
 	}
 
-	lines:=[]map[string]interface{}{}
+	points:=[]*Point{}
 	scanner := bufio.NewScanner(tf.ContentFile)
 	for scanner.Scan() {
-		var result map[string]interface{}
-		err := json.Unmarshal(scanner.Bytes(), &result)
+		var line map[string]interface{}
+		err := json.Unmarshal(scanner.Bytes(), &line)
 		if err != nil {
 			log.Println(err)
 			return nil
 		}
-
-		robotInfo:=result["robot_info"].(map[string]interface{})
-		lines=append(lines,robotInfo)
-  }
-	return lines
+		point:=tf.getPoint(line,indicator)
+		points=append(points,point)
+  	}
+	return points
 }
 
 func GetTestFile(outPath string,deviceID string,timeStamp int64) *TestFile {

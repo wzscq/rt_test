@@ -140,7 +140,7 @@ const opGetFilePoints={
 }
 
 export function createGetTestFilePointsMessage(frameParams,device){
-    opUpdateFileContent.params={...opUpdateFileContent.params,...frameParams};
+    opUpdateFilePoints.params={...opUpdateFilePoints.params,...frameParams};
     opGetFilePoints.input={...device,to:RT_SERVICE_GET_FILE_POINTS};
     opGetFilePoints.successOperation=opUpdateFilePoints;
     return {

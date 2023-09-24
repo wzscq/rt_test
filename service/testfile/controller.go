@@ -16,6 +16,33 @@ type GetContentReq struct {
 	To int64	`json:"to1"`
 }
 
+type IndicatorLegendItem struct {
+	ID string `json:"id"`
+	SN string `json:"sn"`
+	Start string `json:"start"`
+	End string `json:"end"`
+	RGB string `json:"rgb"`
+}
+
+type IndicatorLegend struct {
+	ModelID string `json:"modelID"`
+	Total int  `json:"total"`
+	List []IndicatorLegendItem  `json:"list"`
+}
+
+type Indicator struct {
+	ExtractPath string `json:"extract_path"`
+	ID string `json:"id"`
+	Name string `json:"name"`
+	Legend IndicatorLegend `json:"legend"`
+}
+
+type GetPointsReq struct {
+	DeviceID string `json:"deviceID"`
+	TimeStamp string `json:"timestamp"`
+	Indicator Indicator `json:"indicator"`
+}
+
 type TestFileController struct {
 	OutPath string
 }
@@ -68,14 +95,14 @@ func (tfc *TestFileController)GetPoints(c *gin.Context){
 		return
 	}	
 
-	var rep GetContentReq
+	var rep GetPointsReq
 	if err := c.BindJSON(&rep); err != nil {
 		log.Println(err)
 		rsp:=common.CreateResponse(common.CreateError(common.ResultWrongRequest,nil),nil)
 		c.IndentedJSON(http.StatusOK, rsp)
 		log.Println("TestFileController GetPoints with error")
 		return
-  }	
+  	}	
 
 	//获取文件内容
 	timestamp,_:=strconv.ParseInt(rep.TimeStamp,10,64)
@@ -89,7 +116,7 @@ func (tfc *TestFileController)GetPoints(c *gin.Context){
 	defer tf.CloseReadOnly()
 
 	//获取文件内容
-	points:=tf.GetPoints()
+	points:=tf.GetPoints(rep.Indicator)
 	rsp:=common.CreateResponse(common.CreateError(common.ResultSuccess,nil),points)
 	c.IndentedJSON(http.StatusOK, rsp)
 }

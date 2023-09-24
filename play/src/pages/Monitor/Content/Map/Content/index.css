@@ -14,6 +14,19 @@
     position: absolute;
 }
 
+.map-point-label {
+    position: absolute;
+    width: auto;
+    min-width: 20px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    background-color: #202020;
+    color: white;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
 .monitor-map-content .indicator {
     position: absolute;
     width: 200px;
