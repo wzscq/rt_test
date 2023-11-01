@@ -124,10 +124,11 @@ func (tf *TestFile)getIndicator(line map[string]interface{},extractPath string)(
 	lastIndex:=len(pathNodes)-1
 	for idx,pathItem:=range pathNodes {
 		if idx<lastIndex {
-			dataItem=dataItem[pathItem].(map[string]interface{})
-			if dataItem==nil {
+			dataTmp,ok:=dataItem[pathItem]
+			if !ok {
 				return nil
 			}
+			dataItem=dataTmp.(map[string]interface{})
 		} else {
 			break
 		}
@@ -206,8 +207,10 @@ func (tf *TestFile)GetPoints(indicator Indicator)([]*Point){
 			return nil
 		}
 		point:=tf.getPoint(line,indicator)
-		points=append(points,point)
-  	}
+		//if point != nil {
+			points=append(points,point)
+		//}
+  }
 	return points
 }
 

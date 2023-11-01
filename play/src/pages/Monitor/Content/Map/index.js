@@ -77,7 +77,7 @@ export default function Map({sendMessageToParent}){
         const queryResponse=(event)=>{
             const {type,dataKey,data}=event.data;
             if(type===FRAME_MESSAGE_TYPE.QUERY_RESPONSE&&
-                dataKey===robotMapRec.id&&
+                dataKey===robotMapRec?.id&&
                 data.list&&data.list.length>0){
                 //const file=data.list[0];
                 const newFileList=robotMapRec?.file?.list?.map(item=>{

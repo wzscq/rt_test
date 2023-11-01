@@ -1,8 +1,17 @@
 .monitor-map-content {
     width: 100%;
     height: calc(100% - 45px);
-    overflow: auto;
+    overflow: hidden;
     position: relative;
+}
+
+.monitor-map-content .image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
 }
 
 .map-point {
@@ -25,6 +34,7 @@
     color: white;
     border-radius: 5px;
     border: 1px solid black;
+    z-index: 100;
 }
 
 .monitor-map-content .indicator {
