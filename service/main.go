@@ -80,6 +80,7 @@ func main() {
 	rtc:=robot.RobotController{
 		RobotClient:robotClient,
 		CRVClient:crvClient,
+		FtpConf:&conf.Ftp,
 	}
 	rtc.Bind(router)
 

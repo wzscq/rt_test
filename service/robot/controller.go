@@ -16,6 +16,7 @@ import (
 type RobotController struct {
 	RobotClient *RobotClient
 	CRVClient *crv.CRVClient
+	FtpConf *common.FtpConf
 }
 
 func (rtc *RobotController)getRobotList(c *gin.Context){
@@ -345,7 +346,7 @@ func (rtc *RobotController)sendTask(c *gin.Context){
 
 	//获取下发内容
 	taskID:=(*rep.SelectedRowKeys)[0]
-	sendTask,errorCode:=GetTask(rtc.CRVClient,taskID,header.Token)
+	sendTask,errorCode:=GetTask(rtc.CRVClient,taskID,header.Token,rtc.FtpConf)
 	if errorCode != common.ResultSuccess {
 		rsp:=common.CreateResponse(common.CreateError(errorCode,nil),nil)
 		c.IndentedJSON(http.StatusOK, rsp)

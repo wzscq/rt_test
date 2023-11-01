@@ -42,7 +42,7 @@ var	queryTaskFields=[]map[string]interface{}{
 	},
 }
 
-func GetTask(crvClient *crv.CRVClient,taskID string,token string)(map[string]interface{},int){
+func GetTask(crvClient *crv.CRVClient,taskID string,token string,ftpConf *common.FtpConf)(map[string]interface{},int){
 	filter:=map[string]interface{}{
 		"id":taskID,
 	}
@@ -86,10 +86,10 @@ func GetTask(crvClient *crv.CRVClient,taskID string,token string)(map[string]int
 		return nil,common.ResultNoTask
 	}
 
-	return ConvertToSendTask(taskMap)
+	return ConvertToSendTask(taskMap,ftpConf)
 }
 
-func ConvertToSendTask(task map[string]interface{})(map[string]interface{},int){
+func ConvertToSendTask(task map[string]interface{},ftpConf *common.FtpConf)(map[string]interface{},int){
 	sendTask:=map[string]interface{}{
 		"testPlanId":task["id"],
 		"exampleName":task["name"],
@@ -111,6 +111,7 @@ func ConvertToSendTask(task map[string]interface{})(map[string]interface{},int){
 		map[string]interface{}{
 		"tc_exe_id":task["id"],
 		"tc_exe_name":task["name"],
+		"ftp_conf":ftpConf,
 		},
 	}
 
