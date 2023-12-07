@@ -31,9 +31,9 @@ export default function Content({map}){
                 const orgWidth=refImg.current.naturalWidth;
                 xRatio=imageWidth/orgWidth;
     
-                const imageHeight=refImg.current.height;
-                const orgHeight=refImg.current.naturalHeight;
-                yRatio=imageHeight/orgHeight;
+                //const imageHeight=refImg.current.height;
+                //const orgHeight=refImg.current.naturalHeight;
+                yRatio=xRatio;//imageHeight/orgHeight;
             }
             return {x:x*xRatio,y:y*yRatio};
         }
