@@ -1,0 +1,10 @@
+{
+    "service":{
+        "port":"localhost:8302"
+    },
+    "dingliServer":{
+        "server":"127.0.0.1",
+        "port":"30999",
+        "timeout":"1m"
+    }
+}
