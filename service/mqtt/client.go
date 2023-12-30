@@ -47,6 +47,12 @@ func (mqc *MQTTClient) getClient()(mqtt.Client){
 
 func (mqc *MQTTClient) connectHandler(client mqtt.Client){
 	log.Println("MQTTClient connectHandler connect status: ",client.IsConnected())
+	mqc.Client=client
+	if client.IsConnected() {
+		topic:=mqc.UploadMeasurementMetrics+"#"
+		log.Println("MQTTClient Subscribe topic:"+topic)
+		client.Subscribe(topic,0,mqc.onUploadMeasurementMetrics)
+	}
 }
 
 func (mqc *MQTTClient) connectLostHandler(client mqtt.Client, err error){
@@ -80,12 +86,5 @@ func (mqc *MQTTClient)Publish(topic,content string)(int){
 }
 
 func (mqc *MQTTClient) Init(){
-	mqc.Client=mqc.getClient()
-	if mqc.Client != nil {
-		topic:=mqc.UploadMeasurementMetrics+"#"
-		log.Println("MQTTClient Subscribe topic:"+topic)
-		mqc.Client.Subscribe(topic,0,mqc.onUploadMeasurementMetrics)
-	} else {
-		log.Println("mqtt client is null")
-	}
+	mqc.getClient()
 }

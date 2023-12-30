@@ -20,6 +20,9 @@ const (
 	ResultBase64DecodeError=10000028
 	ResultCreateFileError=10000029
 	ResultGenerateReportError=10100030
+	ResultNotSupportedReportType=10100031
+	ResultSaveDataError = 10200005
+	ResultQueryRequestError = 10200006
 )
 
 var errMsg = map[int]CommonRsp{
@@ -28,9 +31,24 @@ var errMsg = map[int]CommonRsp{
 		Message:"操作成功",
 		Error:false,
 	},
+	ResultSaveDataError:CommonRsp{
+		ErrorCode:ResultSaveDataError,
+		Message:"保存数据到数据时发生错误，请与管理员联系处理",
+		Error:true,
+	},
+	ResultQueryRequestError:CommonRsp{
+		ErrorCode:ResultQueryRequestError,
+		Message:"下发参数时发送查询参数请求失败，请与管理员联系处理",
+		Error:true,
+	},
 	ResultWrongRequest:CommonRsp{
 		ErrorCode:ResultWrongRequest,
 		Message:"请求参数错误，请检查参数是否完整，参数格式是否正确",
+		Error:true,
+	},
+	ResultNotSupportedReportType:CommonRsp{
+		ErrorCode:ResultWrongRequest,
+		Message:"创建报表时遇到不支持的报表类型，请确认报表类型是否正确",
 		Error:true,
 	},
 	ResultCreateDirError:CommonRsp{

@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"rt_report/common"
 	"rt_report/report"
+	"rt_report/testlog"
 	"log"
 	"os"
 )
@@ -32,6 +33,11 @@ func main() {
 	dingliClient:=report.DingliClient{DingliServer:&conf.DingliServer}
 	reportController:=report.ReportController{DingliClient:&dingliClient}
 	reportController.Bind(router)
+
+	testLogController:=testlog.TestLogController{
+		TestLogConf:&conf.TestLog,
+	}
+	testLogController.Bind(router)
 
 	router.Run(conf.Service.Port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

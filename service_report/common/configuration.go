@@ -16,9 +16,14 @@ type serviceConf struct {
 	Port string `json:"port"`
 }
 
+type TestLogConf struct {
+	Root string `json:"root"`
+}
+
 type Config struct {
 	Service serviceConf `json:"service"`
 	DingliServer DingliServerConf `json:"dingliServer"`
+	TestLog TestLogConf `json:"testLog"`
 }
 
 var gConfig Config

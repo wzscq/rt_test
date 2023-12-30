@@ -14,7 +14,7 @@ type Command struct {
 
 type Response struct {
 	CommandType string `json:"CommandType"`
-	Params []string `json:"Params"`
+	Params []interface{} `json:"Params"`
 }
 
 func GetKPICommand(files []string,template string)(*Command){
@@ -22,8 +22,21 @@ func GetKPICommand(files []string,template string)(*Command){
 		files,
 		"",
 		"",
+		"",
 		template,
 	}
 	command:=Command{CommandType:CMD_KPIReport,Params:params}
+	return &command
+}
+
+func GetCustomerCommand(files []string,template string)(*Command){
+	params:=[]interface{}{
+		files,
+		"",
+		"",
+		"",
+		template,
+	}
+	command:=Command{CommandType:CMD_CustomReport,Params:params}
 	return &command
 }

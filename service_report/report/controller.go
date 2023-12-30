@@ -8,6 +8,7 @@ import (
 )
 
 type generateReportRequest struct {
+	ReportType string `json:"reportType"`
 	FileName []string `json:"fileName"`
 	Template string `json:"template`
 }
@@ -27,9 +28,23 @@ func (cl *ReportController)generateReport(c *gin.Context){
 		c.IndentedJSON(http.StatusOK, rsp)
 		log.Println("ReportController end generateReport with error")
 		return
-  	}
+  }
 	
-	err:=cl.DingliClient.GetKPIReport(rep.FileName,rep.Template)
+	var err error
+	if rep.ReportType == CMD_KPIReport {
+		err=cl.DingliClient.GetKPIReport(rep.FileName,rep.Template)
+	} else if rep.ReportType == CMD_CustomReport {
+		err=cl.DingliClient.GetCustomerReport(rep.FileName,rep.Template)
+	} else {
+		params:=map[string]interface{}{
+			"report type":rep.ReportType,
+		}
+		rsp:=common.CreateResponse(common.CreateError(common.ResultNotSupportedReportType,params),nil)
+		c.IndentedJSON(http.StatusOK, rsp)
+		log.Println("ReportController end generateReport with error: not supported report type ",rep.ReportType)
+		return
+	}
+
 	if err!=nil{
 		params:=map[string]interface{}{
 			"error":err,
