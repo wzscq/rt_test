@@ -23,6 +23,10 @@ const (
 	ResultNotSupportedReportType=10100031
 	ResultSaveDataError = 10200005
 	ResultQueryRequestError = 10200006
+	ResultGetCachedTestFileInfoError = 10200007
+	ResultNoLogFileError = 10200008
+	ResultReadLogPathError = 10200009
+	ResultOpenZipFileError = 10200010
 )
 
 var errMsg = map[int]CommonRsp{
@@ -38,7 +42,7 @@ var errMsg = map[int]CommonRsp{
 	},
 	ResultQueryRequestError:CommonRsp{
 		ErrorCode:ResultQueryRequestError,
-		Message:"下发参数时发送查询参数请求失败，请与管理员联系处理",
+		Message:"CRVClient发送查询参数请求失败，请与管理员联系处理",
 		Error:true,
 	},
 	ResultWrongRequest:CommonRsp{
@@ -69,6 +73,26 @@ var errMsg = map[int]CommonRsp{
 	ResultGenerateReportError:CommonRsp{
 		ErrorCode:ResultGenerateReportError,
 		Message:"生成报表文件失败，请与管理员联系处理",
+		Error:true,
+	},
+	ResultGetCachedTestFileInfoError:CommonRsp{
+		ErrorCode:ResultGetCachedTestFileInfoError,
+		Message:"获取测试文件信息失败，请与管理员联系处理",
+		Error:true,
+	},
+	ResultNoLogFileError:CommonRsp{
+		ErrorCode:ResultNoLogFileError,
+		Message:"没有找到对应的日志文件，请确认测试文件是否存在",
+		Error:true,
+	},
+	ResultReadLogPathError:CommonRsp{
+		ErrorCode:ResultReadLogPathError,
+		Message:"读取日志文件夹失败，请与管理员联系处理",
+		Error:true,
+	},
+	ResultOpenZipFileError:CommonRsp{
+		ErrorCode:ResultOpenZipFileError,
+		Message:"打开zip文件失败，请与管理员联系处理",
 		Error:true,
 	},
 }

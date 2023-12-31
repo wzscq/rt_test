@@ -7,7 +7,15 @@
         "port":"30999",
         "timeout":"1m"
     },
+    "crv":{
+        "server":"http://127.0.0.1:8200",
+        "appID":"rt_test",
+        "token":"rt_test_service"
+    },
     "testLog":{
-        "root":""
+        "root":"testfiles/testlog",
+        "downloadUrl":"http://localhost:8302/testlog/download/",
+        "extractRoot":"testfiles/ddib",
+        "reportDownloadUrl":"http://localhost:8302/report/download/"
     }
 }

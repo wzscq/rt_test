@@ -6,6 +6,12 @@ import (
 	"encoding/json"
 )
 
+type crvConf struct {
+	Server string `json:"server"`
+  AppID string `json:"appID"`
+	Token string `json:"token"`
+}
+
 type DingliServerConf struct {
 	Server string `json:"server"`
 	Port string `json:"port"`
@@ -18,12 +24,16 @@ type serviceConf struct {
 
 type TestLogConf struct {
 	Root string `json:"root"`
+	DownloadUrl string `json:"downloadUrl"`
+	ExtractRoot string `json:"extractRoot"`
+	ReportDownloadUrl string `json:"reportDownloadUrl"`
 }
 
 type Config struct {
 	Service serviceConf `json:"service"`
 	DingliServer DingliServerConf `json:"dingliServer"`
 	TestLog TestLogConf `json:"testLog"`
+	CRV crvConf `json:"crv"`
 }
 
 var gConfig Config

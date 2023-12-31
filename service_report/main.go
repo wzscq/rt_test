@@ -6,6 +6,8 @@ import (
 	"rt_report/common"
 	"rt_report/report"
 	"rt_report/testlog"
+	"rt_report/dingli"
+	"rt_report/crv"
 	"log"
 	"os"
 )
@@ -22,6 +24,13 @@ func main() {
 
 	conf:=common.InitConfig(confFile)
 
+	//crvClient 用于到crvframeserver的请求
+	crvClient:=&crv.CRVClient{
+		Server:conf.CRV.Server,
+		Token:conf.CRV.Token,
+		AppID:conf.CRV.AppID,
+	}
+
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins:true,
@@ -30,12 +39,19 @@ func main() {
 		AllowCredentials: true,
   	}))
 
-	dingliClient:=report.DingliClient{DingliServer:&conf.DingliServer}
-	reportController:=report.ReportController{DingliClient:&dingliClient}
+	dingliClient:=dingli.DingliClient{
+		DingliServer:&conf.DingliServer,
+	}
+	reportController:=report.ReportController{
+		DingliClient:&dingliClient,
+		CRVClient:crvClient,
+		TestLogConf:&conf.TestLog,
+	}
 	reportController.Bind(router)
 
 	testLogController:=testlog.TestLogController{
 		TestLogConf:&conf.TestLog,
+		CRVClient:crvClient,
 	}
 	testLogController.Bind(router)
 

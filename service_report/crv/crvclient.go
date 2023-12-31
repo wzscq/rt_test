@@ -87,6 +87,10 @@ const (
 	CC_ID = "id"
 )
 
+const (
+	DOWNLOAD_FILE="downloadFile"
+)
+
 func (crv *CRVClient) Login()(int) {
 	log.Println("start login")
 	loginRep:=loginRep{
@@ -223,5 +227,22 @@ func (crv *CRVClient)Query(commonReq *CommonReq,token string)(*common.CommonRsp,
 	return &commonRsp,common.ResultSuccess
 }
 
-
+func GetDownloadFileResult(downloadUrl,fileName string)(map[string]interface{}){
+	url:=downloadUrl+fileName
+	return map[string]interface{}{
+		"operation":map[string]interface{}{
+			"type":DOWNLOAD_FILE,
+			"params":map[string]interface{}{
+				"fileName":fileName,
+				"downloadByUrl":true,
+			},
+			"input":map[string]interface{}{
+				"list":[]map[string]interface{}{
+					{"url":url},
+				},
+			},
+			"description":map[string]interface{}{"key":"page.crvformview.downloadFile","default":"下载文件"},
+		},
+	}
+}
 
