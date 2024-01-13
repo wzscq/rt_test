@@ -8,13 +8,15 @@ import (
 	"io"
 	"encoding/json"
 	"strings"
+	"time"
 )
 
 type TestFile struct {
 	OutPath string
 	DeviceID string
-	TimeStamp int64
+	TimeStamp string
 	ContentFile *os.File
+	StartTime int64
 	LineCount int64
 	//下面两个字段用于控制文件超时关闭
 	lastLineCount int64
@@ -28,7 +30,7 @@ type Point struct {
 }
 
 func (tf *TestFile) Close() {
-	indexFileName:=tf.OutPath+"/"+tf.DeviceID+"_"+strconv.FormatInt(tf.TimeStamp,10)+".idx"
+	indexFileName:=tf.OutPath+"/"+tf.DeviceID+"_"+tf.TimeStamp+".idx"
 	idxFile,err:=os.OpenFile(indexFileName,os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		log.Printf("Open file failed [Err:%s]\n", err.Error())
@@ -49,7 +51,7 @@ func (tf *TestFile) WriteLine(lineContent string) {
 }
 
 func (tf *TestFile)GetIdxContent()(string){
-	indexFileName:=tf.OutPath+"/"+tf.DeviceID+"_"+strconv.FormatInt(tf.TimeStamp,10)+".idx"
+	indexFileName:=tf.OutPath+"/"+tf.DeviceID+"_"+tf.TimeStamp+".idx"
 	idxFile,err:=os.Open(indexFileName)
 	if err != nil {
 		log.Printf("Open file failed [Err:%s]\n", err.Error())
@@ -214,8 +216,8 @@ func (tf *TestFile)GetPoints(indicator Indicator)([]*Point){
 	return points
 }
 
-func GetTestFile(outPath string,deviceID string,timeStamp int64) *TestFile {
-	contentFileName:=outPath+"/"+deviceID+"_"+strconv.FormatInt(timeStamp,10)+".content"
+func GetTestFile(outPath string,deviceID string,timeStamp string) *TestFile {
+	contentFileName:=outPath+"/"+deviceID+"_"+timeStamp+".content"
 	contentFile,err:=os.OpenFile(contentFileName,os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		log.Printf("Open file failed [Err:%s]\n", err.Error())
@@ -226,6 +228,7 @@ func GetTestFile(outPath string,deviceID string,timeStamp int64) *TestFile {
 		DeviceID:deviceID,
 		TimeStamp:timeStamp,
 		ContentFile:contentFile,
-		OutPath:outPath,		
+		OutPath:outPath,
+		StartTime:time.Now().Unix(),		
 	}
 }

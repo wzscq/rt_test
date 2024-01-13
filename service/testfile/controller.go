@@ -6,7 +6,7 @@ import (
 	"rt_test_service/common"
 	"rt_test_service/crv"
 	"net/http"
-	"strconv"
+	//"strconv"
 )
 
 type GetContentReq struct {
@@ -67,8 +67,8 @@ func (tfc *TestFileController)GetContent(c *gin.Context){
   	}	
 
 	//获取文件内容
-	timestamp,_:=strconv.ParseInt(rep.TimeStamp,10,64)
-	tf:=GetTestFile(tfc.OutPath,rep.DeviceID,timestamp)
+	//timestamp,_:=strconv.ParseInt(rep.TimeStamp,10,64)
+	tf:=GetTestFile(tfc.OutPath,rep.DeviceID,rep.TimeStamp)
 	if tf==nil {
 		rsp:=common.CreateResponse(common.CreateError(common.ResultFileNotExist,nil),nil)
 		c.IndentedJSON(http.StatusOK, rsp)
@@ -105,8 +105,8 @@ func (tfc *TestFileController)GetPoints(c *gin.Context){
   	}	
 
 	//获取文件内容
-	timestamp,_:=strconv.ParseInt(rep.TimeStamp,10,64)
-	tf:=GetTestFile(tfc.OutPath,rep.DeviceID,timestamp)
+	//timestamp,_:=strconv.ParseInt(rep.TimeStamp,10,64)
+	tf:=GetTestFile(tfc.OutPath,rep.DeviceID,rep.TimeStamp)
 	if tf==nil {
 		rsp:=common.CreateResponse(common.CreateError(common.ResultFileNotExist,nil),nil)
 		c.IndentedJSON(http.StatusOK, rsp)

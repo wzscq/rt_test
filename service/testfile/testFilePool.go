@@ -5,7 +5,21 @@ import (
 	"sync"
 	"time"
 	"rt_test_service/crv"
+	"encoding/json"
+	"fmt"
 )
+
+type CaseProgress struct {
+	SessionID int64 `json:"session_id"`
+}
+
+type LineDataItem struct {
+	CaseProgress CaseProgress `json:"case_progress"`
+}
+
+type LineData struct {
+	Data []LineDataItem `json:"data"`
+}
 
 type TestFilePool struct {
 	OutPath string
@@ -33,7 +47,7 @@ func InitTestFilePool(outPath string,idleBeforeClose string,crvClient *crv.CRVCl
 
 func (tfp *TestFilePool)createCacheRecord(tf *TestFile){
 	//将unix时间戳转换为字符串
-	startTime:=time.Unix(tf.TimeStamp,0).Format("2006-01-02 15:04:05")
+	startTime:=time.Unix(tf.StartTime,0).Format("2006-01-02 15:04:05")
 
 	testFileMap:=map[string]interface{}{
 		"device_id":tf.DeviceID,
@@ -78,7 +92,7 @@ func (tfp *TestFilePool) WriteDeviceTestLine(deviceID,line string){
 
 	tf:=tfp.Pool[deviceID]
 	if tf == nil {
-		tf=tfp.CreateTestFile(deviceID)
+		tf=tfp.CreateTestFile(deviceID,line)
 		tfp.Pool[deviceID]=tf
 	}
 	
@@ -89,8 +103,25 @@ func (tfp *TestFilePool) WriteDeviceTestLine(deviceID,line string){
 	tf.WriteLine(line)
 }
 
-func (tfp *TestFilePool)CreateTestFile(deviceID string)(*TestFile){
-	timeStamp:=time.Now().Unix()
+func GetLineTimeStamp(line string)(string){
+	//解析line，获取时间戳
+	LineData:=LineData{}
+	err:=json.Unmarshal([]byte(line),&LineData)
+	if err != nil {
+		log.Println("GetLineTimeStamp Unmarshal failed:",err)
+		return ""
+	}
+
+	if len(LineData.Data)==0 {
+		log.Println("GetLineTimeStamp LineData.Data is empty")
+		return ""
+	}
+
+	return fmt.Sprintf("%d",LineData.Data[0].CaseProgress.SessionID)
+}
+
+func (tfp *TestFilePool)CreateTestFile(deviceID,line string)(*TestFile){
+	timeStamp:=GetLineTimeStamp(line)
 	return GetTestFile(tfp.OutPath,deviceID,timeStamp)
 }
 
